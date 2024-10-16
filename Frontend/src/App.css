@@ -1,0 +1,52 @@
+.wrapper{
+  width: 420px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, .2);
+  backdrop-filter: blur(30px); 
+  box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+  color: #fff;  
+  border-radius: 10px;
+  padding: 30px 40px;  
+ }
+ .wrapper h1{
+     font-size: 25px;
+     text-align: center;
+     padding-bottom: 5%;
+ }
+ .icon{
+     margin-left: 15%;
+     padding-top: 6%;
+ }
+ .wrapper button{
+     height: 45px;
+     border-radius: 40px;
+     padding: 10px;
+     border: none;
+     outline: none;
+     width: 50%;
+     margin-left: auto;
+     margin-right: auto;
+     display: block;
+     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+     cursor: pointer;
+     font-size: 16px;
+     font-weight: 700;
+ }
+ .wrapper .register-link{
+     font-size: 14.5px;
+     text-align: center;
+     margin: 20px 0 15px;
+ }
+ .register-link p a{
+     color: #fff;
+     text-decoration: none;
+     font-size: 600;
+ }
+ .register-link p a:hover{
+     text-decoration: underline;
+ } 
+ .metaLogo{
+     height: 1%;
+     width: 1%;
+     margin-left: 0;
+ }
