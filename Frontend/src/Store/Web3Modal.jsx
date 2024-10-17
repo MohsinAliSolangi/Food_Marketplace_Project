@@ -1,16 +1,8 @@
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react'
+import { createAppKit } from '@reown/appkit/react'
+import { Ethers5Adapter } from '@reown/appkit-adapter-ethers5'
+import { mainnet } from '@reown/appkit/networks'
 
-// 1. Get projectId
 const projectId = process.env.REACT_APP_WALLET_CONNECT
-
-// // 2. Set chains
-// const mainnet = {
-//   chainId: 1,
-//   name: 'Ethereum',
-//   currency: 'ETH',
-//   explorerUrl: 'https://etherscan.io',
-//   rpcUrl: `${process.env.REACT_ETH_RPC}`
-// }
 
 // const LocalHost = {
 //   chainId: 1337,
@@ -28,33 +20,22 @@ const sepolia = {
   rpcUrl: `${process.env.REACT_BRIDGE_SEPOURL}`
 }
 
-// 3. Create modal
 const metadata = {
-  name: 'Creed Coin Website',
-  description: 'This is Creed Coin website',
-  url: 'https://CreedCoin.org/', // origin must match your domain & subdomain
-  icons: ['https://CreedCoin.org/']
+  name: 'FYP Project',
+  description: 'This is FYP Project website',
+  url: 'https://fyp.org/',
+  icons: ['https://fyp.org/']
 }
 
-// 4. Create Ethers config
-const ethersConfig = defaultConfig({
-  /*Required*/
-  metadata,
-  /*Optional*/
-  enableEIP6963: true, // true by default
-  enableInjected: true, // true by default
-  enableCoinbase: true, // true by default
-  // rpcUrl: '...', // used for the Coinbase SDK
-  defaultChainId: 1, // used for the Coinbase SDK
-})
-
-
-createWeb3Modal({
-  ethersConfig,
-  chains: [sepolia],
+// 3. Create the AppKit instance
+createAppKit({
+  adapters: [new Ethers5Adapter()],
+  metadata: metadata,
+  networks: [mainnet, sepolia],
   projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration,
-  enableOnramp: true // Optional - false as default
+  features: {
+    analytics: true
+  }
 })
 
 export function Web3Modal({ children }) {
