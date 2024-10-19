@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 *{
   margin: 0;
@@ -6,7 +9,7 @@
   box-sizing: border-box;
 }
 
-body {
+/* body {
   font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -17,7 +20,7 @@ body {
   background: url('../src/assets/fresh-and-healthy-fruits-ai-free.jpg') no-repeat;
   background-size: cover;
   background-position: center;
-}
+} */
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',

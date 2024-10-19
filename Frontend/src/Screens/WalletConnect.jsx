@@ -12,15 +12,18 @@ const WalletConnect = () => {
   const { address, isConnected } = useAppKitAccount();
   const { walletProvider } = useAppKitProvider();
 
-  let nevigate = useNavigate();
+  let navigate = useNavigate();
 
   useEffect(() => {
     if(isConnected){
-        nevigate("/marketplace");
+        navigate("/marketplace");
     }
   }, [address]);
 
   return (
+    <>
+    <div className="container">
+
     <div className="wrapper">
       <div className="icon">
         <img src={image} alt="Food Tracer" />
@@ -36,6 +39,8 @@ const WalletConnect = () => {
         </div>
       </div>
     </div>
+    </div>
+    </>
   );
 };
 

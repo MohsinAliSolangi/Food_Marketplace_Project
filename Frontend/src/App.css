@@ -7,6 +7,19 @@
   color: #fff;  
   border-radius: 10px;
   padding: 30px 40px;  
+
+ }
+ .container{
+      font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url('./assets/fresh-and-healthy-fruits-ai-free.jpg') no-repeat;
+  background-size: cover;
+  background-position: center;
  }
  .wrapper h1{
      font-size: 25px;
