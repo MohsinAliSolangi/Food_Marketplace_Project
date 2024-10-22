@@ -8,24 +8,29 @@ import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import BidPage from "./pages/BidPage";
+import WalletConnect from "./pages/WalletConnect";
 
 
 function App() {
   return (
     <>
-      <Router>
         <Routes>
+          
+          {/* wallet connect */}
+          <Route path="/" element={<WalletConnect />} />
+
           {/* upload */}
-          <Route path="/upload" element={<Uploadpage />} />
+          <Route path="/list" element={<Uploadpage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+
           {/* selling */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/purchase-history" element={<Dashboard />} />
 
           {/* marketplace
            */}
-          <Route path="/" element={<Home />} />
+          <Route path="/marketplace" element={<Home />} />
           <Route path="/bid" element={<BidPage />} />
 
           {/* about us 
@@ -36,7 +41,6 @@ function App() {
       <Route path='/contact' element={<contact/>}/>
       */}
         </Routes>
-      </Router>
     </>
   );
 }

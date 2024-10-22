@@ -25,28 +25,28 @@ function NavComp() {
             <div class="flex items-center justify-between h-16">
               <div class=" flex items-center">
 
-                <a class="flex-shrink-0" href="/">
+                <a class="flex-shrink-0" href="/marketplace">
                   <img class="w-20 h-20" src={logo} alt="Workflow" />
                 </a>
                 <div class="hidden md:block">
                   <div class="flex items-baseline ml-10 space-x-4">
                     <a
                       class="text-white  hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                      href="/"
+                      href="/marketplace"
                     >
-                      Home
+                      Marketplace
                     </a>
                     <a
                       class="text-white  hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                      href="/dashboard"
+                      href="/purchase-history"
                     >
-                      dashboard
+                      Purchase History
                     </a>
                     <a
                       class="text-white  hover:text-gray-200  px-3 py-2 rounded-md text-sm font-medium"
-                      href="/upload"
+                      href="/list"
                     >
-                      upload
+                      List Your Product
                     </a>
                     {/* <a
                       class="text-white  hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"

@@ -53,7 +53,6 @@ function Home() {
     <>
     <NavComp/>
       <ProductComponent data={data}/>
-
     </>
   )
 }
