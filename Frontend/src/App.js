@@ -1,21 +1,42 @@
 import "./App.css";
-import { useState } from "react";
-import React from "react";
-import WalletConnect from "./Screens/WalletConnect";
-import { Route, Routes, useLocation } from "react-router-dom";
-import Marketplace from "./Screens/Marketplace";
-import Header from "./Components/Header";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Signup from "./pages/Signup";
+
+import Login from "./pages/Login";
+import Uploadpage from "./pages/Uploadpage";
+import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
+import BidPage from "./pages/BidPage";
+
 
 function App() {
-  let location = useLocation();
-  console.log(location, "locationlocation");
   return (
     <>
-      {location?.pathname != "/" && <Header />}
-      <Routes>
-        <Route path="/" element={<WalletConnect />} />
-        <Route path="/marketplace" element={<Marketplace />} />
-      </Routes>
+      <Router>
+        <Routes>
+          {/* upload */}
+          <Route path="/upload" element={<Uploadpage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          {/* selling */}
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* marketplace
+           */}
+          <Route path="/" element={<Home />} />
+          <Route path="/bid" element={<BidPage />} />
+
+          {/* about us 
+      <Route path='/about' element={<about/>}/>
+      */}
+
+          {/* contact us 
+      <Route path='/contact' element={<contact/>}/>
+      */}
+        </Routes>
+      </Router>
     </>
   );
 }
