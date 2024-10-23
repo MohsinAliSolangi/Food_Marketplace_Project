@@ -22,6 +22,7 @@ const WalletConnect = () => {
   }, [address]);
 
   return (
+    <div className="container">
     <div className="wrapper">
       <div className="icon">
         <img src={image} alt="Food Tracer" />
@@ -36,6 +37,7 @@ const WalletConnect = () => {
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 };
