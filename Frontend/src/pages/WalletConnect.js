@@ -19,6 +19,7 @@ const WalletConnect = ({isUserRegister}) => {
   }, [address, isConnected]);
 
   return (
+    <div className="container">
     <div className="wrapper">
       <div className="icon">
         <img src={image} alt="Food Tracer" />
@@ -33,6 +34,7 @@ const WalletConnect = ({isUserRegister}) => {
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 };
