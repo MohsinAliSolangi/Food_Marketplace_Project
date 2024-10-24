@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import { useAppKit, useAppKitAccount, useDisconnect } from "@reown/appkit/react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 const logo = require('../assets/logo-light.png');
 // import { useNavigate } from "react-router-dom";
 
 function NavComp() {
     // const navigate = useNavigate();
+    const { open } = useAppKit();
+    const { disconnect } = useDisconnect()
 
   const [hide, sethide] = useState(true);
   const s = {
@@ -16,6 +20,17 @@ function NavComp() {
     }
 
   }
+
+  const { address, isConnected } = useAppKitAccount();
+  let nevigate = useNavigate();
+
+  useEffect(() => {
+    if (!isConnected) {
+      nevigate("/");
+    }
+  }, [address,isConnected]);
+
+
   return (
     <>
       <div>
@@ -120,7 +135,7 @@ function NavComp() {
                             role="menuitem"
                           >
                             <span class="flex flex-col">
-                              <span>Logout</span>
+                              <span onClick={()=>disconnect()}>Logout</span>
                             </span>
                           </a>
                         </div>

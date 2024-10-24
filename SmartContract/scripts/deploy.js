@@ -3,23 +3,39 @@ const { ethers } = require("hardhat");
 async function main() {
  
 
-  const foodTraceability = await ethers.getContractFactory("FoodTraceability");
+  const foodTraceabilityMarketplace = await ethers.getContractFactory("FoodTraceabilityMarketplace");
 
   // here we deploy the contract
-  const FoodTraceability = await foodTraceability.deploy();
+  const FoodTraceabilityMarketplace = await foodTraceabilityMarketplace.deploy();
   // 10 is the Maximum number of whitelisted addresses allowed
 
   // Wait for it to finish deploying
-  await FoodTraceability.deployed();
+  await FoodTraceabilityMarketplace.deployed();
 
   // print the address of the deployed contract
-  console.log("FoodTraceability Contract Address:",
-    FoodTraceability.address
+  console.log("FoodTraceabilityMarketplace Contract Address:",
+    FoodTraceabilityMarketplace.address
   );
 
 
 
-  saveFrontendFiles(FoodTraceability, "FoodTraceability");
+  const foodTraceabilityContract = await ethers.getContractFactory("FoodTraceabilityContract");
+
+  // here we deploy the contract
+  const FoodTraceabilityContract = await foodTraceabilityContract.deploy();
+  // 10 is the Maximum number of whitelisted addresses allowed
+
+  // Wait for it to finish deploying
+  await FoodTraceabilityContract.deployed();
+
+  // print the address of the deployed contract
+  console.log("FoodTraceabilityContract Contract Address:",
+    FoodTraceabilityContract.address
+  );
+
+
+  saveFrontendFiles(FoodTraceabilityMarketplace, "FoodTraceabilityMarketplace");
+  saveFrontendFiles(FoodTraceabilityContract, "FoodTraceabilityContract");
 }
 
 function saveFrontendFiles(contract, name) {

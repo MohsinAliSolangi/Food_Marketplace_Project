@@ -18,6 +18,15 @@ module.exports = {
           runs: 1000,
         },
       },
+    },
+    {
+      version: "0.8.22",
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 1000,
+        },
+      },
     }
   ]
   },
@@ -27,9 +36,9 @@ module.exports = {
       chainId: 31337,
       gasPrice: "auto",
       gasLimit: 3000000,
-      forking: {
-         url:'https://eth-mainnet.g.alchemy.com/v2/',
-        }
+      // forking: {
+      //    url:'https://eth-mainnet.g.alchemy.com/v2/',
+      //   }
     }, 
     sepolia: {
       url: "https://1rpc.io/sepolia",

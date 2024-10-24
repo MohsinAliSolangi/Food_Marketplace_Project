@@ -1,7 +1,46 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SelectComp from "../components/SelectComp";
+import { Store } from "../Store/Store";
+import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
+import { useNavigate } from "react-router-dom";
 
-function Signup() {
+function Signup({isUserRegister}) {
+  const { registerNewUser } = useContext(Store);
+
+  const { address, isConnected } = useAppKitAccount();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    role: "",
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData, // This should be an object
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("FormData:", formData);
+    registerNewUser(formData);
+    isUserRegister();
+  };
+
+  const { walletProvider } = useAppKitProvider("eip155");
+
+  let nevigate = useNavigate();
+
+  useEffect(() => {
+    if (!isConnected) {
+      nevigate("/");
+    }
+  }, [address, isConnected]);
+
   return (
     <>
       <div
@@ -28,42 +67,54 @@ function Signup() {
             Create An Account
           </div>
           <div class="text-center mx-10  karla  ">
-            Create an account to enjoy all the services 
+            Create an account to enjoy all the services
           </div>
           <div class="mt-8">
-            <form action="#" autoComplete="off">
+            <form onSubmit={handleSubmit}>
               <div class="flex flex-col mb-1">
                 <div class="flex relative ">
                   <input
                     type="text"
-                    id="sign-in-username"
+                    required
+                    name="name"
+                    defaultValue={formData.name}
+                    id="name"
                     class=" rounded-xl flex-1 appearance-none w-[427px] border border-gray-300  h-12 mb-3 py-2 px-4 bg-white text-gray-800 placeholder-gray-600 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                     placeholder="Your Name"
+                    onChange={handleChange}
                   />
                 </div>
               </div>
               <div class="flex flex-col mb-1">
                 <div class="flex relative ">
                   <input
-                    type="text"
-                    id="sign-in-email"
+                    type="email"
+                    required
+                    name="email"
+                    defaultValue={formData.email}
+                    id="email"
                     class=" rounded-xl flex-1 appearance-none w-[427px] border border-gray-300  h-12 mb-3 py-2 px-4 bg-white text-gray-800 placeholder-gray-600 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                     placeholder="Your Email"
+                    onChange={handleChange}
                   />
                 </div>
               </div>
               <div class="flex flex-col mb-4">
                 <div class="flex relative ">
                   <input
-                    type="password"
-                    id="sign-in-password"
+                    type="tel" // Use "tel" for phone input
+                    required
+                    name="phone_number"
+                    defaultValue={formData.phone_number}
+                    id="phone_number"
                     class=" rounded-xl flex-1 w-[427px] appearance-none border border-gray-300  h-12 py-2 px-4 bg-white text-gray-800 placeholder-gray-600 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Your Password"
+                    placeholder="Your Phone Number"
+                    onChange={handleChange}
                   />
                 </div>
               </div>
-              <SelectComp />
-              <div class="flex items-center mb-6 -mt-4">
+              <SelectComp formData={formData} handleChange={handleChange} />
+              {/* <div class="flex items-center mb-6 -mt-4">
                 <div class="flex ml-auto">
                   <a
                     href="#"
@@ -72,22 +123,26 @@ function Signup() {
                     Forgot Your Password?
                   </a>
                 </div>
-              </div>
-               <div style={{flexDirection:"column"}} class="flex w-full ">
-                        <button type="submit" style={{fontSize:'20px', backgroundColor:'#84C7AE'}} class="py-2 px-4 text-xl mb-2  focus:ring-black-500 focus:ring-offset-black-200 text-white w-[300px] transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-2xl h-14 mx-auto">
+              </div> */}
+              <div style={{ flexDirection: "column" }} class="flex w-full ">
+                {/* <button type="submit" style={{fontSize:'20px', backgroundColor:'#84C7AE'}} class="py-2 px-4 text-xl mb-2  focus:ring-black-500 focus:ring-offset-black-200 text-white w-[300px] transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-2xl h-14 mx-auto">
                             Login Account 
                         </button>
                         <div  class=" m-auto">
                             <h2  class="font-semibold">OR</h2>
-                        </div>
+                        </div> */}
 
-                        <button type="submit" style={{fontSize:'20px', backgroundColor:'#f6851b'}} class="py-2 px-4 text-xl mt-2 focus:ring-black-500 focus:ring-offset-black-200 text-white w-[300px] transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-2xl h-14 mx-auto">
-                            Metamask 
-                        </button>
-                    </div>
+                <button
+                  type="submit"
+                  style={{ fontSize: "20px", backgroundColor: "#f6851b" }}
+                  class="py-2 px-4 text-xl mt-2 focus:ring-black-500 focus:ring-offset-black-200 text-white w-[300px] transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-2xl h-14 mx-auto"
+                >
+                  signUp
+                </button>
+              </div>
             </form>
           </div>
-          <div class="flex items-center justify-center mt-4">
+          {/* <div class="flex items-center justify-center mt-4">
             <a
               href="/login"
               class="inline-flex items-center   text-center text-black hover:text-gray-700 "
@@ -100,7 +155,7 @@ function Signup() {
                 Login here.
               </p>
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

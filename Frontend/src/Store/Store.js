@@ -1,197 +1,107 @@
 import React, { useState, useEffect, createContext } from "react";
 import { ethers } from "ethers";
 
-// import creedMasterContractAddress from "../../contractsData/CreedMasterContract-address.json"; //0x870aCC96B6E62cd256CbebF3Bb2A310d605085C4 BNB
-// import creedMasterContract from "../../contractsData/CreedMasterContract.json";
+import FoodTraceabilityContractAddress from "./contractsData/FoodTraceabilityContract-address.json";
+import FoodTraceabilityContract from "./contractsData/FoodTraceabilityContract.json";
 
-// import creedPresaleContractAddress from "../../contractsData/CreedPreSaleContract-address.json"; //0x42451B6Ba17080C44D5cEc86D828e628EBcEC798 BNB
-// import creedPresaleContract from "../../contractsData/CreedPreSaleContract.json";
-
-// import USDTContractAddress from "../../contractsData/USDTToken-address.json"; //0x55d398326f99059ff775485246999027b3197955 BNB
-// import USDTContract from "../../contractsData/USDCToken.json";
-
-// import USDCContractAddress from "../../contractsData/USDCToken-address.json"; //0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d BNB
-// import USDCContract from "../../contractsData/USDCToken.json";
-
-// import creedCoinAddress from "../../contractsData/creedCoin-address.json"; //0x2eD89D0027BB2490CbfAA8cac38DdA0d6e242Edf BNB
-// import creedCoin from "../../contractsData/creedCoin.json";
+import FoodTraceabilityMarketplaceAddress from "./contractsData/FoodTraceabilityMarketplace-address.json";
+import FoodTraceabilityMarketplace from "./contractsData/FoodTraceabilityMarketplace.json";
 
 import { ToastContainer, toast } from "react-toastify";
-import { formatUnits } from "ethers/lib/utils";
-
-// const getProviderPresaleContract = () => {
-//   const providers = process.env.REACT_MAIN_RPC;
-//   const provider = new ethers.providers.JsonRpcProvider(providers); //"http://localhost:8545/"
-//   const presaleContract = new ethers.Contract(
-//     creedPresaleContractAddress.address,
-//     creedPresaleContract.abi,
-//     provider
-//   );
-//   return presaleContract;
-// };
+import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
+import { useNavigate } from "react-router-dom";
+import { BrowserProvider, Contract, formatUnits } from 'ethers'
 
 export const Store = createContext();
 
 export const StoreProvider = ({ children }) => {
-  // const { address, chainId, isConnected } = useWeb3ModalAccount();
-  // const { walletProvider } = useWeb3ModalProvider();
+  const { address, isConnected } = useAppKitAccount();
 
-  // const [loader, setloader] = useState(false);
-  // const [tronConnected, setTronConnected] = useState(false);
+  const { walletProvider } = useAppKitProvider("eip155");
 
-  // const [proposal, setProposals] = useState([]);
+  const [loader, setloader] = useState(false);
 
-  // const [withdrawInvestedTokensRequests, setWithdrawInvestedTokensRequests] =
-  //   useState([]);
-  // const [masterContractProposalData, setMasterContractProposalData] = useState(
-  //   []
-  // );
+  const [isRegistered, setIsRegistered] = useState(false);
 
-  // const [contractData, setContractData] = useState({
-  //   ethBalance: 0,
-  //   usdcBalance: 0,
-  //   usdtBalance: 0,
-  //   creedBalance: 0,
-  //   raisedAmount: 0,
-  //   tokenPrice: 0,
-  //   totalSupply: 300000000000,
-  //   isPreSaleActive: false,
-  //   stakedTokens: 0,
-  //   startTime: 0,
-  //   duration: 0,
-  //   rewardEarned: 0,
-  //   ClaimedReward: 0,
-  // });
-
-  // const [masterContractData, setMasterContractData] = useState({
-  //   totalStakers: 0,
-  //   totalStakeAmount: 0,
-  //   totalRewards: 0,
-  //   distributed: 0,
-  // });
-
-  // const [coin, setCoin] = useState([]);
-  // const [tronCurrentAccount, setTronCurrentAccount] = useState("");
-  // const [tronWalletForBridge, setTronWalletForBridge] = useState("");
+  const [contractData, setContractData] = useState({
+    ethBalance: 0,
+    usdcBalance: 0,
+    usdtBalance: 0,
+    creedBalance: 0,
+    raisedAmount: 0,
+    tokenPrice: 0,
+    totalSupply: 300000000000,
+    isPreSaleActive: false,
+    stakedTokens: 0,
+    startTime: 0,
+    duration: 0,
+    rewardEarned: 0,
+    ClaimedReward: 0,
+  });
 
   // ////////////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////
 
-  // const GetValues = async () => {
-  //   try {
-  //     setloader(true);
+  const GetIsUserRegistered = async () => {
+    try {
+      if (isConnected) {
+        setloader(true);
 
-  //     const sellPrice = await getProviderPresaleContract().salePrice();
-  //     const raisedAmount = await getProviderPresaleContract().raisedAmount();
-  //     const isPresale = await getProviderPresaleContract().isSale();
+        const ethersProvider = new ethers.providers.Web3Provider(
+          walletProvider
+        );
 
-  //     setContractData((prevState) => ({
-  //       ...prevState,
-  //       raisedAmount: formatUnits(raisedAmount, 18)?.toString(),
-  //       tokenPrice: sellPrice?.toString(),
-  //       isPreSaleActive: isPresale,
-  //     }));
+        const signer = ethersProvider.getSigner();
 
-  //     if (isConnected) {
-  //       const ethersProvider = new ethers.providers.Web3Provider(
-  //         walletProvider
-  //       );
-  //       const signer = ethersProvider.getSigner();
-  //       const USDTContracts = new ethers.Contract(
-  //         USDTContractAddress.address,
-  //         USDTContract.abi,
-  //         signer
-  //       );
-  //       const USDCContracts = new ethers.Contract(
-  //         USDCContractAddress.address,
-  //         USDCContract.abi,
-  //         signer
-  //       );
-  //       const creedContracts = new ethers.Contract(
-  //         creedCoinAddress.address,
-  //         creedCoin.abi,
-  //         signer
-  //       );
-  //       const balance = await ethersProvider.getBalance(address);
-  //       const USDTBalance = await USDTContracts.balanceOf(address);
-  //       const USDCBalance = await USDCContracts.balanceOf(address);
-  //       const CREEDBalance = await creedContracts.balanceOf(address);
+        const FoodMarketplaceContract = new ethers.Contract(
+          FoodTraceabilityMarketplaceAddress.address,
+          FoodTraceabilityMarketplace.abi,
+          signer
+        );
 
-  //       setContractData((prevState) => ({
-  //         ...prevState,
-  //         ethBalance: formatUnits(balance, 18)?.toString(),
-  //         usdcBalance: formatUnits(USDTBalance, 18)?.toString(),
-  //         usdtBalance: formatUnits(USDCBalance, 18)?.toString(),
-  //         creedBalance: formatUnits(CREEDBalance, 18)?.toString(),
-  //       }));
-  //     }
-  //     setloader(false);
-  //   } catch (error) {
-  //     setloader(false);
-  //     console.log("Fourth");
-  //     console.log(error);
-  //     // toast.error(`${JSON.stringify(error.reason)}`);
-  //   }
-  // };
+        const IsRegistered = await FoodMarketplaceContract.isUser(address);
+        console.log(IsRegistered,"IsRegistered`1");
+        setloader(false);
+        return IsRegistered;
+      }
+    } catch (error) {
+      setloader(false);
+      console.log(error);
+    }
+  };
 
-  // const addTokenToMetamask = async () => {
-  //   const isMobile =
-  //     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-  //       navigator.userAgent
-  //     );
+const registerNewUser = async (data) => {
+try {
+  setloader(true);
 
-  //   if (typeof window.ethereum !== "undefined") {
-  //     try {
-  //       if (!isConnected) {
-  //         return toast.error("Please Connect Your Wallet."), setloader(false);
-  //       }
-  //       const wasAdded = await window.ethereum.request({
-  //         method: "wallet_watchAsset",
-  //         params: {
-  //           type: "ERC20",
-  //           options: {
-  //             address: creedCoinAddress?.address, // Token address
-  //             symbol: "$Creed", // Token symbol
-  //             decimals: 18, // Token decimals
-  //             image: "https://creedcoin.org/assets/logo/creedlogo.png", // Token image URL
-  //           },
-  //         },
-  //       });
+  console.log(walletProvider,"walletProvider");
 
-  //       if (wasAdded) {
-  //         toast.success("Token successfully added to Metamask!");
-  //       } else {
-  //         toast.error("Failed to add the token.");
-  //       }
-  //     } catch (error) {
-  //       toast.error("Failed to add token to Metamask. Please try again later.");
-  //       console.error("Failed to add token to Metamask: ", error);
-  //     }
-  //   } else {
-  //     if (isMobile) {
-  //       // Metamask app is not installed, redirect to installation page
-  //       window.open("https://metamask.app.link/dapp/creedcoin.org");
-  //     } else {
-  //       // if no window.ethereum and no window.web3, then MetaMask or Trust Wallet is not installed
-  //       alert(
-  //         "MetaMask or Trust Wallet is not installed. Please consider installing one of them."
-  //       );
-  //     }
-  //   }
-  // };
+  // Ensure walletProvider is defined
+  if (!walletProvider) {
+    throw new Error("Wallet provider is not defined.");
+}
 
-  // const copyToClipboard = () => {
-  //   const tokenAddress = "0x2eD89D0027BB2490CbfAA8cac38DdA0d6e242Edf"; // Your token address
-  //   navigator.clipboard
-  //     .writeText(tokenAddress)
-  //     .then(() => {
-  //       toast.success("Token address copied to clipboard!");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Failed to copy: ", error);
-  //     });
-  // };
+const ethersProvider = new ethers.providers.Web3Provider(
+  walletProvider
+);
+
+const signer = ethersProvider.getSigner();
+
+  const FoodMarketplaceContract = new ethers.Contract(
+    FoodTraceabilityMarketplaceAddress.address,
+    FoodTraceabilityMarketplace.abi,
+    signer
+  );
+
+ const regis = await FoodMarketplaceContract.registerAsUser(data?.name,data?.email,data?.phone_number,data?.role);
+ regis.wait();
+
+ setloader(false);
+} catch (error) {
+  console.log(error);
+}
+  };
 
   // const BuyWithUSDTandUSDC = async (payAmountInUSDT, tokens, isUSDT) => {
   //   if (!isConnected) {
@@ -913,7 +823,7 @@ export const StoreProvider = ({ children }) => {
   //         creedCoin.abi,
   //         signer
   //       );
-        
+
   //       let burnAmount = ethers.utils.parseEther(amount?.toString());
 
   //       let tokensApproved = await creedToken.allowance(
@@ -928,7 +838,7 @@ export const StoreProvider = ({ children }) => {
   //         );
   //         await tx.wait();
   //       }
-     
+
   //       let tx = await creedBNBMainBridge.lockDeposit(burnAmount, to); //TODO change wanted chain
   //       await tx.wait();
 
@@ -1104,9 +1014,7 @@ export const StoreProvider = ({ children }) => {
   //   }
   // }
 
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
+
 
   // useEffect(() => {
   //   GetValues();
@@ -1118,42 +1026,47 @@ export const StoreProvider = ({ children }) => {
   return (
     <>
       <Store.Provider
-        value={{
-          // coin,
-          // loader,
-          // setloader,
-          // LockDeposit,
-          // unLockDeposit,
-          // GetAllProposalByArray,
-          // contractData,
-          // addTokenToMetamask,
-          // tronCurrentAccount,
-          // setTronCurrentAccount,
-          // tronWalletForBridge,
-          // setTronWalletForBridge,
-          // copyToClipboard,
-          // GetValues,
-          // getProviderPresaleContract,
-          // unstakeTokensRequest,
-          // BuyWithUSDTandUSDC,
-          // BuyWithETH,
-          // presaleStart,
-          // presaleStop,
-          // StakeTokensSend,
-          // getStakedInfoByUser,
-          // masterContractData,
-          // GetTotalRewardEarned,
-          // getMasterContractData,
-          // submitProposal,
-          // proposal,
-          // masterContractProposalData,
-          // GetInvestedTokensWithdrawRequests,
-          // acceptWithdrawTokenRequest,
-          // addingVote,
-          // withdrawInvestedTokensRequests,
-          // tronConnected,
-          // setTronConnected,
-        }}
+        value={
+          {
+            isRegistered,
+            GetIsUserRegistered,
+            registerNewUser,
+            // coin,
+            // loader,
+            // setloader,
+            // LockDeposit,
+            // unLockDeposit,
+            // GetAllProposalByArray,
+            // contractData,
+            // addTokenToMetamask,
+            // tronCurrentAccount,
+            // setTronCurrentAccount,
+            // tronWalletForBridge,
+            // setTronWalletForBridge,
+            // copyToClipboard,
+            // GetValues,
+            // getProviderPresaleContract,
+            // unstakeTokensRequest,
+            // BuyWithUSDTandUSDC,
+            // BuyWithETH,
+            // presaleStart,
+            // presaleStop,
+            // StakeTokensSend,
+            // getStakedInfoByUser,
+            // masterContractData,
+            // GetTotalRewardEarned,
+            // getMasterContractData,
+            // submitProposal,
+            // proposal,
+            // masterContractProposalData,
+            // GetInvestedTokensWithdrawRequests,
+            // acceptWithdrawTokenRequest,
+            // addingVote,
+            // withdrawInvestedTokensRequests,
+            // tronConnected,
+            // setTronConnected,
+          }
+        }
       >
         {children}
       </Store.Provider>

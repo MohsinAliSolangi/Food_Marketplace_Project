@@ -1,25 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import image from "../assets/logo-light.ico";
+import { ethers } from "ethers";
 import {
   useAppKit,
   useAppKitAccount,
   useAppKitProvider,
 } from "@reown/appkit/react";
 import { useNavigate } from "react-router-dom";
+import { Store } from "../Store/Store";
 
-const WalletConnect = () => {
+const WalletConnect = ({isUserRegister}) => {
   // 4. Use modal hook
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
-  const { walletProvider } = useAppKitProvider();
-
-  let nevigate = useNavigate();
 
   useEffect(() => {
-    if(isConnected){
-        nevigate("/marketplace");
-    }
-  }, [address]);
+    isUserRegister()
+  }, [address, isConnected]);
 
   return (
     <div className="wrapper">

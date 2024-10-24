@@ -1,30 +1,27 @@
 import React from 'react'
 
-function SelectComp() {
-  return (
-    
+function SelectComp({formData, handleChange}) {
+
+
+return (
 <label class="text-gray-700 mb-8 " for="animals">
    
-    <select id="animals" class=" mb-5 bg-white border border-gray-300 rounded-xl w-full py-2 px-4 shadow-sm h-12  focus:outline-none focus:ring-primary-500 focus:border-primary-500" name="animals">
+    <select value={formData.role} onChange={handleChange}  name="role" id="role" class=" mb-5 bg-white border border-gray-300 rounded-xl w-full py-2 px-4 shadow-sm h-12  focus:outline-none focus:ring-primary-500 focus:border-primary-500" >
         <option value="">
             Select a Role
         </option>
-        <option value="patient">
+        <option value="farmer">
             farmer
         </option>
-        <option value="Doctor">
+        <option value="distributer">
             distributer
         </option>
-        <option value="Ministry">
+        <option value="supplier">
             supplier
         </option>
-        <option value="Ministry">
+        <option value="wholeSaler">
             whole saler
         </option>
-        <option value="Ministry">
-            Admin
-        </option>
-      
     </select>
 </label>
 
