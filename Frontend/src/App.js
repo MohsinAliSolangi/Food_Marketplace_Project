@@ -1,5 +1,10 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Uploadpage from "./pages/Uploadpage";
@@ -13,37 +18,42 @@ import { useContext } from "react";
 import { Store } from "./Store/Store";
 
 function App() {
-  
-  const {GetIsUserRegistered }=useContext(Store)
+  const { GetIsUserRegistered } = useContext(Store);
 
   const nevigate = useNavigate();
 
   const { address, isConnected } = useAppKitAccount();
 
-const isUserRegister= async () =>{
-  if (isConnected) {
-   let isRegistered = await GetIsUserRegistered();
-    console.log(isRegistered,"isRegisteredisRegistered");
-    if (!isRegistered) {
-      nevigate("/signUp");
+  const isUserRegister = async () => {
+    if (isConnected) {
+      let isRegistered = await GetIsUserRegistered();
+      console.log(isRegistered, "isRegisteredisRegistered");
+      if (!isRegistered) {
+        nevigate("/signUp");
+      } else {
+        nevigate("/marketplace");
+      }
     } else {
-      nevigate("/marketplace");
+      nevigate("/");
     }
-  } else {
-    nevigate("/");
-  }
-}
+  };
 
   return (
     <>
       <Routes>
         {/* wallet connect */}
-        <Route path="/" element={<WalletConnect isUserRegister={isUserRegister}/>} />
+        <Route
+          path="/"
+          element={<WalletConnect isUserRegister={isUserRegister} />}
+        />
 
         {/* upload */}
         <Route path="/list" element={<Uploadpage />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/signup" element={<Signup isUserRegister={isUserRegister} />} />
+        <Route
+          path="/signup"
+          element={<Signup isUserRegister={isUserRegister} />}
+        />
         <Route path="/login" element={<Login />} />
 
         {/* selling */}
