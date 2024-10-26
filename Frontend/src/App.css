@@ -9,28 +9,32 @@
   padding: 30px 40px;  
 
  }
+/* Apply the background image to a specific page container */
+.background-page {
+    margin: 0; /* Remove default margin */
+    height: 100vh; /* Full height of the viewport */
+    background: url('./assets/fresh-and-healthy-fruits-ai-free.jpg') no-repeat center center fixed; /* Fixed background */
+    background-size: cover; /* Cover the entire screen */
+}
+
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh; /* Use viewport height for full-screen effect */
     width: 100%;
-    background: url('./assets/fresh-and-healthy-fruits-ai-free.jpg') no-repeat center center;
-    background-size: contain; /* Default to cover */
 }
 
 /* Media query for screens with a resolution of 1920x1200 */
 @media only screen and (min-width: 1920px) and (max-width: 1920px) and (min-height: 1200px) and (max-height: 1200px) {
     .container {
         /* You can add specific styles for 1920x1200 resolution here */
-        background-size: cover; /* Ensure the background image covers the container */
-        /* Add any other styles specific to this resolution */
     }
 }
 
 /* Media query for smaller screens */
 @media (max-width: 768px) {
-    .container {
+    .background-page {
         background-size: contain; /* Change to contain on smaller screens */
     }
 }
