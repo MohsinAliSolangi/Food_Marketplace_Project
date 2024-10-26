@@ -19,6 +19,8 @@ const WalletConnect = ({isUserRegister}) => {
   }, [address, isConnected]);
 
   return (
+    <div className='background-page '>
+
     <div className="container">
     <div className="wrapper">
       <div className="icon">
@@ -34,6 +36,7 @@ const WalletConnect = ({isUserRegister}) => {
           </p>
         </div>
       </div>
+    </div>
     </div>
     </div>
   );
