@@ -19,7 +19,7 @@ function Signup({isUserRegister}) {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
-      ...prevFormData, // This should be an object
+      ...prevFormData, 
       [name]: value,
     }));
   };
@@ -28,7 +28,10 @@ function Signup({isUserRegister}) {
     event.preventDefault();
     console.log("FormData:", formData);
     registerNewUser(formData);
-    isUserRegister();
+
+    setTimeout(()=> {
+      isUserRegister();
+    },2000)
   };
 
   const { walletProvider } = useAppKitProvider("eip155");
@@ -102,7 +105,7 @@ function Signup({isUserRegister}) {
               <div class="flex flex-col mb-4">
                 <div class="flex relative ">
                   <input
-                    type="tel" // Use "tel" for phone input
+                    type="tel" 
                     required
                     name="phone_number"
                     defaultValue={formData.phone_number}
@@ -114,23 +117,8 @@ function Signup({isUserRegister}) {
                 </div>
               </div>
               <SelectComp formData={formData} handleChange={handleChange} />
-              {/* <div class="flex items-center mb-6 -mt-4">
-                <div class="flex ml-auto">
-                  <a
-                    href="#"
-                    class="inline-flex text-xs  text-black sm:text-sm hover:text-gray-700 "
-                  >
-                    Forgot Your Password?
-                  </a>
-                </div>
-              </div> */}
+
               <div style={{ flexDirection: "column" }} class="flex w-full ">
-                {/* <button type="submit" style={{fontSize:'20px', backgroundColor:'#84C7AE'}} class="py-2 px-4 text-xl mb-2  focus:ring-black-500 focus:ring-offset-black-200 text-white w-[300px] transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-2xl h-14 mx-auto">
-                            Login Account 
-                        </button>
-                        <div  class=" m-auto">
-                            <h2  class="font-semibold">OR</h2>
-                        </div> */}
 
                 <button
                   type="submit"
@@ -142,20 +130,6 @@ function Signup({isUserRegister}) {
               </div>
             </form>
           </div>
-          {/* <div class="flex items-center justify-center mt-4">
-            <a
-              href="/login"
-              class="inline-flex items-center   text-center text-black hover:text-gray-700 "
-            >
-              <span class="ml-2">You have an account?</span>
-              <p
-                style={{ fontWeight: 600, color: "#84C7AE" }}
-                class="font-semibold   poppins ml-1 inline hover:cursor-pointer "
-              >
-                Login here.
-              </p>
-            </a>
-          </div> */}
         </div>
       </div>
     </>

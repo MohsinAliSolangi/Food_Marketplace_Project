@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 
 function UploadForm({ onSubmit }) {
   const [product, setProduct] = useState({
-    id: Date.now(), // Unique ID based on timestamp
     name: '',
     variety: '',
     origin: '',
     currentPrice: '',
-    minimumBidIncrement: '',
     biddingDeadline: '',
     description: '',
     weight: '', // New field for weight
@@ -34,12 +32,10 @@ function UploadForm({ onSubmit }) {
     onSubmit(product);
     // Reset form after submission
     setProduct({
-      id: Date.now(),
       name: '',
       variety: '',
       origin: '',
       currentPrice: '',
-      minimumBidIncrement: '',
       biddingDeadline: '',
       description: '',
       weight: '',
@@ -98,20 +94,6 @@ function UploadForm({ onSubmit }) {
             type="number"
             name="currentPrice"
             value={product.currentPrice}
-            onChange={handleChange}
-            required
-            step="0.01"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="minimumBidIncrement">
-            Minimum Bid Increment ($)
-          </label>
-          <input
-            type="number"
-            name="minimumBidIncrement"
-            value={product.minimumBidIncrement}
             onChange={handleChange}
             required
             step="0.01"

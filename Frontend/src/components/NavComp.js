@@ -1,45 +1,48 @@
-import { useAppKit, useAppKitAccount, useDisconnect } from "@reown/appkit/react";
+import {
+  useAppKit,
+  useAppKitAccount,
+  useDisconnect,
+} from "@reown/appkit/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-const logo = require('../assets/logo-light.png');
-// import { useNavigate } from "react-router-dom";
+const logo = require("../assets/logo-light.png");
 
 function NavComp() {
-    // const navigate = useNavigate();
-    const { open } = useAppKit();
-    const { disconnect } = useDisconnect()
+
+  const { open } = useAppKit();
+
+  const { disconnect } = useDisconnect();
 
   const [hide, sethide] = useState(true);
   const s = {
-    hid:{
-        display:"none"
+    hid: {
+      display: "none",
     },
-    
-    nohid:{
-        display:"block"
-    }
 
-  }
+    nohid: {
+      display: "block",
+    },
+  };
 
   const { address, isConnected } = useAppKitAccount();
+
   let nevigate = useNavigate();
 
-  useEffect(() => {
-    if (!isConnected) {
-      nevigate("/");
-    }
-  }, [address,isConnected]);
+  // useEffect(() => {
+  //   if (!isConnected) {
+  //     nevigate("/");
+  //   }
+  // }, [address,isConnected]);
 
+  console.log(isConnected, "isConnectedisConnectedisConnected");
 
   return (
     <>
       <div>
-        <nav style={{backgroundColor: "#023047",}} class="   shadow ">
-              
+        <nav style={{ backgroundColor: "#023047" }} class="   shadow ">
           <div class="px-8 py-2 mx-auto max-w-7xl">
             <div class="flex items-center justify-between h-16">
               <div class=" flex items-center">
-
                 <a class="flex-shrink-0" href="/marketplace">
                   <img class="w-20 h-20" src={logo} alt="Workflow" />
                 </a>
@@ -63,20 +66,16 @@ function NavComp() {
                     >
                       List Your Product
                     </a>
-                    {/* <a
-                      class="text-white  hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                      href="/#"
-                    >
-                      profile
-                    </a> */}
                   </div>
-                  {/* <h2 class="text-white justify-center items-center block"> food tracer</h2> */}
                 </div>
-                      <div class="justify-center items-center ml-28">
-        <a class="text-xl font-semibold text-white font-heading" href="#">
-            Food Tracer
-        </a>
-    </div>
+                <div class="justify-center items-center ml-28">
+                  <a
+                    class="text-xl font-semibold text-white font-heading"
+                    href="#"
+                  >
+                    Food Tracer
+                  </a>
+                </div>
               </div>
               <div class="block">
                 <div class="flex  items-center ml-4 md:ml-6">
@@ -86,17 +85,11 @@ function NavComp() {
                         <button
                           type="button"
                           onClick={() => {
-                            
-                              sethide(!hide);
-                              
-                             
-                            }
-                          }
-                          
+                            sethide(!hide);
+                          }}
                           class="  flex items-center justify-center w-full rounded-md  px-4 py-2 text-sm font-medium text-white dark:text-gray-50  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500"
                           id="options-menu"
                         >
-          
                           <svg
                             width="20"
                             fill="currentColor"
@@ -110,7 +103,7 @@ function NavComp() {
                         </button>
                       </div>
                       <div
-                        style={ hide ? s.hid : s.nohid }
+                        style={hide ? s.hid : s.nohid}
                         class="absolute  right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg  ring-1 ring-black ring-opacity-5"
                       >
                         <div
@@ -128,14 +121,14 @@ function NavComp() {
                               <span>Profile</span>
                             </span>
                           </a>
-                          
+
                           <a
                             href="#"
                             class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 "
                             role="menuitem"
                           >
                             <span class="flex flex-col">
-                              <span onClick={()=>disconnect()}>Logout</span>
+                              <span onClick={() => disconnect()}>Logout</span>
                             </span>
                           </a>
                         </div>
@@ -160,29 +153,6 @@ function NavComp() {
               </div>
             </div>
           </div>
-          {/* <div class="md:hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <a
-                class="text-gray-300 hover:text-gray-800 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                href="/#"
-              >
-                Home
-              </a>
-              <a
-                class="text-gray-800 dark:text-white block px-3 py-2 rounded-md text-base font-medium"
-                href="/#"
-              >
-                Gallery
-              </a>
-              <a
-                class="text-gray-300 hover:text-gray-800 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                href="/#"
-              >
-                Contact
-              </a>
-             
-            </div>
-          </div> */}
         </nav>
       </div>
     </>

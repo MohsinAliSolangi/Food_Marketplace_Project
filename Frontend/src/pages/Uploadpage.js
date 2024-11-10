@@ -1,23 +1,87 @@
-import React from 'react'
-import NavComp from '../components/NavComp'
-import UploadForm from '../components/UploadeForm'
+import React, { useContext } from "react";
+import NavComp from "../components/NavComp";
+import UploadForm from "../components/UploadeForm";
+import { uploadFileToIPFS, uploadJSONToIPFS } from "../pinata";
+import { useNavigate } from "react-router-dom";
+import { Store } from "../Store/Store";
 
 function Uploadpage() {
-     const handleSubmit = (product) => {
-    // Handle the uploaded product data here
-    console.log(product);
-    // You can also send the data to your server or perform any other necessary actions
+  const { mintThenList } = useContext(Store);
+
+  const navigate = useNavigate();
+
+  //TODO::uncommit this for production
+  // const handleSubmit = async (product) => {
+  //   console.log(product, "productproductproduct");
+
+  //   if (typeof product?.image !== "undefined") {
+  //     let resut
+  //     try {
+  //       resut = await uploadFileToIPFS(product?.image);
+  //     } catch (error) {
+  //       console.log("ipfs image fails",error);
+  //     }
+
+  //     const nftJSON = {
+  //       attributes: [
+  //         { trait_type: `Variety`, value: `${product?.variety}` },
+  //         { trait_type: "Origin", value: `${product?.origin}` },
+  //         { trait_type: "Weight", value: `${product?.weight}` },
+  //       ],
+  //       description: `${product?.description}`,
+  //       image: `${resut?.pinataURL}`,
+  //       name: `${product?.name}`,
+  //     };
+
+  //     try {
+  //       const result = await uploadJSONToIPFS(nftJSON);
+  //       console.log("this is json image format ", result);
+
+  //       if (!product?.currentPrice || !product?.biddingDeadline || !result) return;
+
+  //       await mintThenList(product?.currentPrice,product?.biddingDeadline,result);
+  //       navigate("/marketplace");
+  //     } catch (error) {
+  //       console.log("ipfs uri upload error: ", error);
+  //     }
+  //   }
+  // };
+
+  const handleSubmit = async (product) => {
+    console.log(product, "productproductproduct");
+    try {
+      const timestamp = convertToUnixTimestamp(product?.biddingDeadline);
+
+      console.log(
+        timestamp,
+        "product?.biddingDeadlineproduct?.biddingDeadline"
+      );
+
+      await mintThenList(
+        product?.currentPrice,
+        timestamp,
+        "https://ipfs.io/ipfs/QmeLfHUuJS1DYSvXmXP2vfZRCFhLF1wDUvUXFbPWQYMCna"
+      );
+      navigate("/marketplace");
+    } catch (error) {
+      console.log("ipfs uri upload error: ", error);
+    }
   };
+
+  function convertToUnixTimestamp(dateString) {
+    const date = new Date(dateString);
+    const unixTimestamp = Math.floor(date.getTime() / 1000);
+    return unixTimestamp;
+  }
+
   return (
     <>
-    <NavComp/>
-<div>
-      <UploadForm onSubmit={handleSubmit} />
-    </div>
-    
-
+      <NavComp />
+      <div>
+        <UploadForm onSubmit={handleSubmit} />
+      </div>
     </>
-  )
+  );
 }
 
-export default Uploadpage
+export default Uploadpage;

@@ -49,6 +49,7 @@ function App() {
 
         {/* upload */}
         <Route path="/list" element={<Uploadpage />} />
+
         <Route path="/profile" element={<Profile />} />
         <Route
           path="/signup"
@@ -62,7 +63,7 @@ function App() {
         {/* marketplace
          */}
         <Route path="/marketplace" element={<Home />} />
-        <Route path="/bid" element={<BidPage />} />
+        <Route path="marketplace/bid/:id" element={<BidPage />} />
 
         {/* about us 
       <Route path='/about' element={<about/>}/>

@@ -13,7 +13,6 @@ error PleaseMakeAllowanceFirst();
 error collectionAlreadyExits();
 
 contract FoodTraceabilityMarketplace is ReentrancyGuard {
-
     struct UserAccount {
         string name;
         string email;
@@ -65,23 +64,31 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
     address[] public collection;
 
     mapping(address => mapping(uint256 => items)) public listing;
-    mapping(address => mapping(uint256 => AuctionDetails)) public _auctionDetail;
+    mapping(address => mapping(uint256 => AuctionDetails))
+        public _auctionDetail;
     mapping(address => UserAccount) public registerationAccount;
 
-    function registerAsUser(string memory _name,string memory _email,uint _phone_number, string memory _role) public {
+    function registerAsUser(
+        string memory _name,
+        string memory _email,
+        uint _phone_number,
+        string memory _role
+    ) public {
         require(!isUser(msg.sender), "You are already registered");
-        registerationAccount[msg.sender] = UserAccount(_name, _email, _phone_number, _role, true);
+        registerationAccount[msg.sender] = UserAccount(
+            _name,
+            _email,
+            _phone_number,
+            _role,
+            true
+        );
     }
 
     function isUser(address _address) public view returns (bool) {
         return registerationAccount[_address].isRegister;
     }
 
-    function sellItem(
-        address _nft,
-        uint256 _tokenId,
-        uint256 _price
-    ) public {
+    function sellItem(address _nft, uint256 _tokenId, uint256 _price) public {
         if (listing[_nft][_tokenId].listed == true) {
             revert NFT_alreadyListed();
         }
@@ -105,9 +112,6 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         if (temp == false) {
             collection.push(_nft);
         }
-
-    
-    
 
         emit ItemListed(msg.sender, _nft, _tokenId, _price);
     }
@@ -134,20 +138,18 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         address _nft,
         uint256 _tokenId,
         uint256 _basePrice,
-        uint256 endTime
+        uint256 _endTime
     ) public {
         if (IERC721(_nft).getApproved(_tokenId) != address(this)) {
             revert NftIsNotApproved();
         }
         ListdItems++;
-        endTime = endTime * 1 seconds;
-        endTime = block.timestamp + endTime;
         _auctionDetail[_nft][_tokenId] = AuctionDetails(
             payable(msg.sender),
             _basePrice,
             address(0),
             0,
-            endTime,
+            _endTime,
             block.timestamp,
             false,
             true
@@ -161,44 +163,37 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         emit ItemListed(msg.sender, _nft, _tokenId, _basePrice);
     }
 
-    //This funtion for make Bid
-    //first call approve function
-    function bid(
-        address _nft,
-        uint256 _tokenId,
-        address _token,
-        uint256 _amount
-    ) public {
-        // msg.sender -> address parameter
+    function bid(address _nft, uint256 _tokenId) public payable nonReentrant {
         AuctionDetails storage auction = _auctionDetail[_nft][_tokenId];
         require(auction.ended == false, "Auction has ended");
         require(auction.seller != address(0), "Auction does not exist");
 
-        // end = auction.ended;
         _updateStatus(_nft, _tokenId);
 
         if (block.timestamp < auction.endTime) {
             require(
-                auction.highestBid < _amount && auction.basePrice <= _amount,
-                "Please send more funds"
+                auction.highestBid < msg.value &&
+                    auction.basePrice <= msg.value,
+                "Bid must be higher than the current highest bid and base price"
             );
             require(
                 msg.sender != auction.seller,
                 "You cannot bid in your own auction"
             );
-            require(
-                IERC20(_token).balanceOf(msg.sender) >= _amount,
-                "you Dont Have Balance"
-            );
 
-            uint256 allowance = IERC20(_token).allowance(
-                msg.sender,
-                address(this)
-            );
-            if (allowance >= _amount) {
-                auction.highestBidder = msg.sender;
-                auction.highestBid = _amount;
+            address payable prevBidder = payable(auction.highestBidder);
+
+            if (prevBidder != address(0)) {
+                (bool success, ) = prevBidder.call{value: auction.highestBid}(
+                    ""
+                );
+                require(success, "Failed to refund previous bidder");
             }
+
+            auction.highestBid = msg.value;
+            auction.highestBidder = payable(msg.sender);
+        } else {
+            revert("Auction has already ended");
         }
     }
 
@@ -215,9 +210,8 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         return auction.ended;
     }
 
-    //This Function for change status
-    function _updateStatus(address _nft, uint256 _tokenId) public {
-        //private
+
+    function _updateStatus(address _nft, uint256 _tokenId) internal {
         AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
         require(auction.ended == false, "This auction has Ended");
 
@@ -308,6 +302,4 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         listing[_nft][_tokenId] = Item;
         emit ItemBought(msg.sender, _nft, _tokenId, auction.highestBid);
     }
-
-  
 }
