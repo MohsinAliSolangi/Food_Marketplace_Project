@@ -14,20 +14,20 @@ import Home from "./pages/Home";
 import BidPage from "./pages/BidPage";
 import WalletConnect from "./pages/WalletConnect";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Store } from "./Store/Store";
+import Loader from "./Models/Loader";
 
 function App() {
-  const { GetIsUserRegistered } = useContext(Store);
+  const { GetIsUserRegistered, setCanCall, loader, isRegistered } = useContext(Store);
 
   const nevigate = useNavigate();
 
   const { address, isConnected } = useAppKitAccount();
 
-  const isUserRegister = async () => {
+  const HandleIsUserRegister = async () => {
+    console.log(isRegistered,"IsRegisteredIsRegistered");
     if (isConnected) {
-      let isRegistered = await GetIsUserRegistered();
-      console.log(isRegistered, "isRegisteredisRegistered");
       if (!isRegistered) {
         nevigate("/signUp");
       } else {
@@ -38,22 +38,45 @@ function App() {
     }
   };
 
+//   canCall
+// setCanCall
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await GetIsUserRegistered();
+        if (result) {
+          setCanCall(true);
+        }
+      } catch (error) {
+        console.error("Error in GetIsUserRegistered:", error);
+      }
+    };
+
+    fetchData();
+  }, [address]);
+
   return (
     <>
+      {loader && <Loader />}
       <Routes>
         {/* wallet connect */}
         <Route
           path="/"
-          element={<WalletConnect isUserRegister={isUserRegister} />}
+          element={
+            <WalletConnect HandleIsUserRegister={HandleIsUserRegister} />
+          }
         />
 
         {/* upload */}
-        <Route path="/list" element={<Uploadpage />} />
+        <Route
+          path="/list"
+          element={<Uploadpage HandleIsUserRegister={HandleIsUserRegister} />}
+        />
 
         <Route path="/profile" element={<Profile />} />
         <Route
           path="/signup"
-          element={<Signup isUserRegister={isUserRegister} />}
+          element={<Signup HandleIsUserRegister={HandleIsUserRegister} />}
         />
         <Route path="/login" element={<Login />} />
 
@@ -62,8 +85,14 @@ function App() {
 
         {/* marketplace
          */}
-        <Route path="/marketplace" element={<Home />} />
-        <Route path="marketplace/bid/:id" element={<BidPage />} />
+        <Route
+          path="/marketplace"
+          element={<Home HandleIsUserRegister={HandleIsUserRegister} />}
+        />
+        <Route
+          path="marketplace/bid/:id"
+          element={<BidPage HandleIsUserRegister={HandleIsUserRegister} />}
+        />
 
         {/* about us 
       <Route path='/about' element={<about/>}/>

@@ -35,7 +35,15 @@ export const StoreProvider = ({ children }) => {
 
   const [isRegistered, setIsRegistered] = useState(false);
 
+  const [canCall, setCanCall] = useState(false);
+
   const [listedNftData, setListedNftData] = useState([]);
+  const [useData, setUserDaat] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    role: "",
+  });
 
   // ////////////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////
@@ -58,10 +66,22 @@ export const StoreProvider = ({ children }) => {
           signer
         );
 
-        const IsRegistered = await FoodMarketplaceContract.isUser(address);
+        const IsRegistered = await FoodMarketplaceContract.registerationAccount(
+          address
+        );
+
+        setIsRegistered(IsRegistered?.isRegister);
+
+        setUserDaat((prev) => ({
+          ...prev,
+          name: IsRegistered?.name,
+          email: IsRegistered?.email,
+          phone_number: IsRegistered?.phone_number,
+          role: IsRegistered?.role,
+        }));
         console.log(IsRegistered, "IsRegistered`1");
         setloader(false);
-        return IsRegistered;
+        return true;
       }
     } catch (error) {
       setloader(false);
@@ -96,7 +116,9 @@ export const StoreProvider = ({ children }) => {
       regis.wait();
       await GetIsUserRegistered();
       setloader(false);
+      return true;
     } catch (error) {
+      setloader(false);
       console.log(error);
     }
   };
@@ -106,6 +128,7 @@ export const StoreProvider = ({ children }) => {
       return toast.error("Please Connect Your Wallet."), setloader(false);
     }
     try {
+      setloader(true);
       const provider = new ethers.providers.Web3Provider(walletProvider);
       const signer = provider.getSigner();
 
@@ -148,6 +171,7 @@ export const StoreProvider = ({ children }) => {
         deadline
       );
       await listOnAuction.wait();
+      setloader(false);
     } catch (error) {
       setloader(false);
       toast.error(`${JSON.stringify(error.reason)}`);
@@ -179,21 +203,12 @@ export const StoreProvider = ({ children }) => {
 
       let items = [];
       for (let i = 1; i <= itemCount; i++) {
-        const item = await MarketplaceContract?.listing(
+        const item = await MarketplaceContract?.listedItemDetails(
           FoodTraceabilityContractAddress.address,
           i
         );
 
-        if (!item?.sale) {
-          const auction = await MarketplaceContract?._auctionDetail(
-            FoodTraceabilityContractAddress.address,
-            i
-          );
-
-          const time = await MarketplaceContract?.getLastTime(
-            FoodTraceabilityContractAddress.address,
-            i
-          );
+        if (!item?.isListedOnSale) {
 
           const temp = Number(time?.toString());
 
@@ -201,8 +216,8 @@ export const StoreProvider = ({ children }) => {
 
           const response = await fetch(uri);
           const metadata = await response.json();
-          console.log(metadata,"metadatametadata");
-          console.log(auction,"auctionauctionauction");
+          console.log(metadata, "metadatametadata");
+          console.log(auction, "auctionauctionauction");
           items.push({
             time: temp,
             basePrice: formatEther(item?.price?.toString()),
@@ -212,20 +227,21 @@ export const StoreProvider = ({ children }) => {
             description: metadata?.description,
             image: metadata?.image,
             weight: metadata?.attributes[2]?.value,
-            variety:metadata?.attributes[0]?.value,
-            origin:metadata?.attributes[1]?.value,
+            variety: metadata?.attributes[0]?.value,
+            origin: metadata?.attributes[1]?.value,
             highestBid: formatEther(auction?.highestBid?.toString()),
             highestBidder: auction?.highestBidder,
             isAuctionEnded: auction?.ended,
           });
         }
       }
-      console.log(items,"itemsitemsitems");
+      console.log(items, "itemsitemsitems");
       setListedNftData(items);
-      return true
+      return true;
     } catch (error) {
       console.log(error, "GetListedError");
-      return false
+      setloader(false);
+      return false;
     }
   };
 
@@ -336,49 +352,30 @@ export const StoreProvider = ({ children }) => {
 
       setloader(true);
       const bidding = ethers.utils.parseEther(price);
-      console.log(FoodTraceabilityContractAddress.address,itemId,bidding?.toString());
-      await (await MarketplaceContract.bid(FoodTraceabilityContractAddress.address,itemId,{value:bidding?.toString()})).wait();
+      console.log(
+        FoodTraceabilityContractAddress.address,
+        itemId,
+        bidding?.toString()
+      );
+      await (
+        await MarketplaceContract.bid(
+          FoodTraceabilityContractAddress.address,
+          itemId,
+          { value: bidding?.toString() }
+        )
+      ).wait();
       setloader(false);
-      return true
+      return true;
     } catch (error) {
       setloader(false);
       console.log(error);
-      return false
+      return false;
     }
   };
 
   //////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////// GET FUNCTIONS /////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////
-
-  const getLastTime = async (itemId) => {
-    try {
-      const time = await getMarketPalceInstance().getLastTime(itemId);
-      const temp = Number(time.toString());
-      const nowDate = Math.floor(new Date().getTime() / 1000);
-      return temp;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getHigestBid = async (itemId) => {
-    try {
-      let bid = await getMarketPalceInstance().getHighestBid(itemId);
-      return ethers.utils.formatEther(bid);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getHigestBidder = async (itemId) => {
-    try {
-      let bidder = await getMarketPalceInstance().getHighestBidder(itemId);
-      return bidder;
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <>
@@ -391,13 +388,14 @@ export const StoreProvider = ({ children }) => {
           loadMarketplaceItems,
           listedNftData,
           cancelListedNft,
+          useData,
           concludeAuction,
           cancellAuction,
           buyMarketItem,
           placeBid,
-          getLastTime,
-          getHigestBid,
-          getHigestBidder,
+          canCall,
+          setCanCall,
+          loader,
         }}
       >
         {children}

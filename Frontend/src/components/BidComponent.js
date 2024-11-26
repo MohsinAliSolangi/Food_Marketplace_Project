@@ -67,7 +67,7 @@ const BidComponent = ({ id }) => {
           <strong>Origin:</strong> {product?.origin}
         </p>
         <p className="text-gray-700">
-          <strong>Current Price:</strong> ${product?.basePrice?.toString()}
+          <strong>Base Price:</strong> ${product?.basePrice?.toString()}
         </p>
         <p className="text-gray-700">
           <strong>Highest Bid:</strong> ${product?.highestBid}

@@ -1,38 +1,33 @@
 const { ethers } = require("hardhat");
 
 async function main() {
- 
 
-  const foodTraceabilityMarketplace = await ethers.getContractFactory("FoodTraceabilityMarketplace");
-
-  // here we deploy the contract
-  const FoodTraceabilityMarketplace = await foodTraceabilityMarketplace.deploy();
-  // 10 is the Maximum number of whitelisted addresses allowed
-
-  // Wait for it to finish deploying
-  await FoodTraceabilityMarketplace.deployed();
-
-  // print the address of the deployed contract
-  console.log("FoodTraceabilityMarketplace Contract Address:",
-    FoodTraceabilityMarketplace.address
+  const foodTraceabilityContract = await ethers.getContractFactory(
+    "FoodTraceabilityContract"
   );
 
-
-
-  const foodTraceabilityContract = await ethers.getContractFactory("FoodTraceabilityContract");
-
-  // here we deploy the contract
   const FoodTraceabilityContract = await foodTraceabilityContract.deploy();
-  // 10 is the Maximum number of whitelisted addresses allowed
 
-  // Wait for it to finish deploying
   await FoodTraceabilityContract.deployed();
 
-  // print the address of the deployed contract
-  console.log("FoodTraceabilityContract Contract Address:",
+  console.log(
+    "FoodTraceabilityContract Contract Address:",
     FoodTraceabilityContract.address
   );
 
+  const foodTraceabilityMarketplace = await ethers.getContractFactory(
+    "FoodTraceabilityMarketplace"
+  );
+
+  const FoodTraceabilityMarketplace =
+    await foodTraceabilityMarketplace.deploy(FoodTraceabilityContract.address);
+
+  await FoodTraceabilityMarketplace.deployed();
+
+  console.log(
+    "FoodTraceabilityMarketplace Contract Address:",
+    FoodTraceabilityMarketplace.address
+  );
 
   saveFrontendFiles(FoodTraceabilityMarketplace, "FoodTraceabilityMarketplace");
   saveFrontendFiles(FoodTraceabilityContract, "FoodTraceabilityContract");

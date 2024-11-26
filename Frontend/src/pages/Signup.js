@@ -4,9 +4,8 @@ import { Store } from "../Store/Store";
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { useNavigate } from "react-router-dom";
 
-function Signup({isUserRegister}) {
-  const { registerNewUser } = useContext(Store);
-
+function Signup({HandleIsUserRegister}) {
+  const { registerNewUser,canCall } = useContext(Store);
   const { address, isConnected } = useAppKitAccount();
 
   const [formData, setFormData] = useState({
@@ -16,33 +15,32 @@ function Signup({isUserRegister}) {
     role: "",
   });
 
+  const nevigate = useNavigate();
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
-      ...prevFormData, 
+      ...prevFormData,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("FormData:", formData);
-    registerNewUser(formData);
-
-    setTimeout(()=> {
-      isUserRegister();
-    },2000)
+    let retult = await registerNewUser(formData);
+    if (retult) {
+      nevigate("/marketplace");
+    }
   };
 
   const { walletProvider } = useAppKitProvider("eip155");
 
-  let nevigate = useNavigate();
-
   useEffect(() => {
-    if (!isConnected) {
-      nevigate("/");
+    if (canCall) {
+      HandleIsUserRegister();
     }
-  }, [address, isConnected]);
+  }, [address, canCall]);
 
   return (
     <>
@@ -105,7 +103,7 @@ function Signup({isUserRegister}) {
               <div class="flex flex-col mb-4">
                 <div class="flex relative ">
                   <input
-                    type="tel" 
+                    type="tel"
                     required
                     name="phone_number"
                     defaultValue={formData.phone_number}
@@ -119,7 +117,6 @@ function Signup({isUserRegister}) {
               <SelectComp formData={formData} handleChange={handleChange} />
 
               <div style={{ flexDirection: "column" }} class="flex w-full ">
-
                 <button
                   type="submit"
                   style={{ fontSize: "20px", backgroundColor: "#f6851b" }}

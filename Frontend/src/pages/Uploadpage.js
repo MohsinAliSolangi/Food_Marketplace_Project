@@ -1,13 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import NavComp from "../components/NavComp";
 import UploadForm from "../components/UploadeForm";
 import { uploadFileToIPFS, uploadJSONToIPFS } from "../pinata";
 import { useNavigate } from "react-router-dom";
 import { Store } from "../Store/Store";
+import { useAppKitAccount } from "@reown/appkit/react";
 
-function Uploadpage() {
-  const { mintThenList } = useContext(Store);
+function Uploadpage({HandleIsUserRegister}) {
 
+  const { mintThenList,canCall } = useContext(Store);
+  const { address, isConnected } = useAppKitAccount();
+  
   const navigate = useNavigate();
 
   //TODO::uncommit this for production

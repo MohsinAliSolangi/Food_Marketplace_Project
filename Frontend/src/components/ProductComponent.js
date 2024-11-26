@@ -47,7 +47,7 @@ function ProductComponent() {
                   <strong>Weight:</strong> {item?.weight} kg
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Current Price:</strong> ETH
+                  <strong>Base Price:</strong> ETH
                   {item?.highestBid > 0 ? item?.highestBid?.toString() : item?.basePrice?.toString()}
                 </p>
               </div>

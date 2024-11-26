@@ -3,14 +3,14 @@ import {
   useAppKitAccount,
   useDisconnect,
 } from "@reown/appkit/react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Store } from "../Store/Store";
 const logo = require("../assets/logo-light.png");
 
 function NavComp() {
-
   const { open } = useAppKit();
-
+  const { useData } = useContext(Store);
   const { disconnect } = useDisconnect();
 
   const [hide, sethide] = useState(true);
@@ -34,67 +34,73 @@ function NavComp() {
   //   }
   // }, [address,isConnected]);
 
-  console.log(isConnected, "isConnectedisConnectedisConnected");
+  const navigate = useNavigate();
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
+  console.log(useData?.role, "useData?.roleuseData?.roleuseData?.role");
 
   return (
     <>
       <div>
-        <nav style={{ backgroundColor: "#023047" }} class="   shadow ">
-          <div class="px-8 py-2 mx-auto max-w-7xl">
-            <div class="flex items-center justify-between h-16">
-              <div class=" flex items-center">
-                <a class="flex-shrink-0" href="/marketplace">
-                  <img class="w-20 h-20" src={logo} alt="Workflow" />
+        <nav style={{ backgroundColor: "#023047" }} className="shadow">
+          <div className="px-8 py-2 mx-auto max-w-7xl">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center">
+                <a className="flex-shrink-0" href="/marketplace">
+                  <img className="w-20 h-20" src={logo} alt="Workflow" />
                 </a>
-                <div class="hidden md:block">
-                  <div class="flex items-baseline ml-10 space-x-4">
-                    <a
-                      class="text-white  hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                      href="/marketplace"
+                <div className="hidden md:block">
+                  <div className="flex items-baseline ml-10 space-x-4">
+                    <button
+                      className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={() => handleNavigation("/marketplace")}
                     >
                       Marketplace
-                    </a>
-                    <a
-                      class="text-white  hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                      href="/purchase-history"
+                    </button>
+                    <button
+                      className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={() => handleNavigation("/purchase-history")}
                     >
                       Purchase History
-                    </a>
-                    <a
-                      class="text-white  hover:text-gray-200  px-3 py-2 rounded-md text-sm font-medium"
-                      href="/list"
-                    >
-                      List Your Product
-                    </a>
+                    </button>
+                    {useData?.role === "farmer" && (
+                      <button
+                        className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                        onClick={() => handleNavigation("/list")}
+                      >
+                        List Your Product
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div class="justify-center items-center ml-28">
-                  <a
-                    class="text-xl font-semibold text-white font-heading"
-                    href="#"
+                <div className="justify-center items-center ml-28">
+                  <button
+                    onClick={() => handleNavigation("/marketplace")}
+                    className="text-xl font-semibold text-white font-heading"
                   >
                     Food Tracer
-                  </a>
+                  </button>
                 </div>
               </div>
-              <div class="block">
-                <div class="flex  items-center ml-4 md:ml-6">
-                  <div class="relative ml-3">
-                    <div class="relative inline-block text-left">
+              <div className="block">
+                <div className="flex items-center ml-4 md:ml-6">
+                  <div className="relative ml-3">
+                    <div className="relative inline-block text-left">
                       <div>
                         <button
                           type="button"
-                          onClick={() => {
-                            sethide(!hide);
-                          }}
-                          class="  flex items-center justify-center w-full rounded-md  px-4 py-2 text-sm font-medium text-white dark:text-gray-50  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500"
+                          onClick={() => sethide(!hide)}
+                          className="flex items-center justify-center w-full rounded-md px-4 py-2 text-sm font-medium text-white dark:text-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500"
                           id="options-menu"
                         >
                           <svg
                             width="20"
                             fill="currentColor"
                             height="20"
-                            class="text-white"
+                            className="text-white"
                             viewBox="0 0 1792 1792"
                             xmlns="http://www.w3.org/2000/svg"
                           >
@@ -104,46 +110,43 @@ function NavComp() {
                       </div>
                       <div
                         style={hide ? s.hid : s.nohid}
-                        class="absolute  right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg  ring-1 ring-black ring-opacity-5"
+                        className="absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
                       >
                         <div
-                          class="py-1 "
+                          className="py-1"
                           role="menu"
                           aria-orientation="vertical"
                           aria-labelledby="options-menu"
                         >
-                          <a
-                            href="/profile"
-                            class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 "
-                            role="menuitem"
+                          <button
+                            onClick={() => handleNavigation("/profile")}
+                            className="block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                           >
-                            <span class="flex flex-col">
-                              <span>Profile</span>
-                            </span>
-                          </a>
+                            Profile
+                          </button>
 
-                          <a
-                            href="#"
-                            class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 "
-                            role="menuitem"
+                          <button
+                            onClick={() => disconnect()}
+                            className="block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                           >
-                            <span class="flex flex-col">
-                              <span onClick={() => disconnect()}>Logout</span>
-                            </span>
-                          </a>
+                            Logout
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="flex -mr-2 md:hidden">
-                <button class="text-gray-800 dark:text-white hover:text-gray-300 inline-flex items-center justify-center p-2 rounded-md focus:outline-none">
+              <div className="flex -mr-2 md:hidden">
+                <button
+                  className="text-gray-800 dark:text-white hover:text-gray-300 inline-flex items-center justify-center p-2 rounded-md focus:outline-none"
+                  onClick={() => handleNavigation("/marketplace")}
+                >
                   <svg
                     width="20"
                     height="20"
                     fill="currentColor"
-                    class="w-8 h-8"
+                    className="w-8 h-8"
                     viewBox="0 0 1792 1792"
                     xmlns="http://www.w3.org/2000/svg"
                   >

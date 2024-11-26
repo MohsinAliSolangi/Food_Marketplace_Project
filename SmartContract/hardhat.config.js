@@ -33,17 +33,16 @@ module.exports = {
 
   networks: {
     hardhat: {
-      chainId: 31337,
+      chainId: 1337,
       gasPrice: "auto",
-      gasLimit: 3000000,
-      // forking: {
-      //    url:'https://eth-mainnet.g.alchemy.com/v2/',
-      //   }
+      forking: {
+         url:'https://eth.drpc.org',
+        }
     }, 
-    sepolia: {
-      url: "https://1rpc.io/sepolia",
-      accounts: [PRIVATE_KEY],
-      gasPrice: "auto",
-    },
+    // sepolia: {
+    //   url: "https://1rpc.io/sepolia",
+    //   accounts: [PRIVATE_KEY],
+    //   gasPrice: "auto",
+    // },
   },
 };

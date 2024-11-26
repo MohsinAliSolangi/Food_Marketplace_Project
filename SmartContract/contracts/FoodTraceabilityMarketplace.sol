@@ -1,42 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 error NftIsNotApproved();
 error PleaseSendCorreactPrice();
-error YouAreNotOwnerOfNFT();
 error NFT_alreadyListed();
 error TransferFailed();
-error PleaseMakeAllowanceFirst();
-error collectionAlreadyExits();
 
 contract FoodTraceabilityMarketplace is ReentrancyGuard {
+    enum Role {
+        Farmer,
+        Dealer,
+        Wholesaler,
+        Seller,
+        Buyer
+    }
+
     struct UserAccount {
         string name;
         string email;
-        uint phone_number;
+        uint256 phone_number;
         string role;
         bool isRegister;
     }
 
-    struct AuctionDetails {
+    struct items {
         address payable seller;
+        address nftContract;
+        uint256 tokenId;
         uint256 basePrice;
         address highestBidder;
         uint256 highestBid;
         uint256 endTime;
         uint256 starTime;
-        bool ended;
-        bool auction;
+        string sallerRole;
+        bool isAuction;
+        bool isListedOnSale;
     }
 
-    struct items {
-        address payable seller;
+    struct BuyHistory {
+        address buyer;
         uint256 price;
-        bool sale;
-        bool listed;
+        uint256 timestamp;
     }
 
     event ItemListed(
@@ -60,18 +66,22 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
     );
 
     uint256 public ListdItems;
-    uint256 public totalAuctionSale;
-    address[] public collection;
+    uint256 public totalItemsSale;
 
-    mapping(address => mapping(uint256 => items)) public listing;
-    mapping(address => mapping(uint256 => AuctionDetails))
-        public _auctionDetail;
+    mapping(uint256 => items) public listedItemDetails;
     mapping(address => UserAccount) public registerationAccount;
+    mapping(uint256 => BuyHistory[]) public nftBuyHistory;
+
+    IERC721 public NFTContract;
+
+    constructor(address _nft) {
+        NFTContract = IERC721(_nft);
+    }
 
     function registerAsUser(
         string memory _name,
         string memory _email,
-        uint _phone_number,
+        uint256 _phone_number,
         string memory _role
     ) public {
         require(!isUser(msg.sender), "You are already registered");
@@ -88,218 +98,160 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         return registerationAccount[_address].isRegister;
     }
 
-    function sellItem(address _nft, uint256 _tokenId, uint256 _price) public {
-        if (listing[_nft][_tokenId].listed == true) {
+    function sellItem(uint256 _itemId, uint256 _price) public {
+        items storage Items = listedItemDetails[_itemId];
+
+        if (Items.isListedOnSale == true) {
             revert NFT_alreadyListed();
         }
-        if (IERC721(_nft).getApproved(_tokenId) != address(this)) {
+
+        if (NFTContract.getApproved(Items.tokenId) != address(this)) {
             revert NftIsNotApproved();
         }
-        ListdItems++;
-        listing[_nft][_tokenId] = items(
-            payable(msg.sender),
-            _price,
-            false,
-            true
-        );
 
-        bool temp;
-        for (uint256 i = 0; i < collection.length; i++) {
-            if (collection[i] == _nft) {
-                temp = true;
-            }
-        }
-        if (temp == false) {
-            collection.push(_nft);
-        }
+        Items.seller = payable(msg.sender);
+        Items.basePrice = _price;
+        Items.isListedOnSale = true;
 
-        emit ItemListed(msg.sender, _nft, _tokenId, _price);
+        emit ItemListed(msg.sender, Items.nftContract, Items.tokenId, _price);
     }
 
-    function buyItem(address _nft, uint256 _tokenId) public payable {
-        items storage Items = listing[_nft][_tokenId];
-        if (msg.value < Items.price) {
+    function buyItem(uint256 _itemId) public payable {
+        items storage Items = listedItemDetails[_itemId];
+
+        if (msg.value < Items.basePrice) {
             revert PleaseSendCorreactPrice();
         }
         (bool success, ) = payable(Items.seller).call{value: msg.value}("");
         if (!success) {
             revert TransferFailed();
         }
-        Items.sale = true;
-        Items.listed = false;
-        IERC721(_nft).safeTransferFrom(Items.seller, msg.sender, _tokenId);
-        delete (listing[_nft][_tokenId]);
-        emit ItemBought(msg.sender, _nft, _tokenId, Items.price);
+
+        Items.isListedOnSale = false;
+
+        NFTContract.safeTransferFrom(Items.seller, msg.sender, Items.tokenId);
+
+        nftBuyHistory[Items.tokenId].push(
+            BuyHistory(msg.sender, msg.value, block.timestamp)
+        );
+
+        emit ItemBought(
+            msg.sender,
+            Items.nftContract,
+            Items.tokenId,
+            Items.basePrice
+        );
     }
 
-    ////////////////// Auctions /////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////// Items SECTION ///////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
-    function createAuction(
-        address _nft,
+    function createItems(
         uint256 _tokenId,
         uint256 _basePrice,
         uint256 _endTime
     ) public {
-        if (IERC721(_nft).getApproved(_tokenId) != address(this)) {
+        if (NFTContract.getApproved(_tokenId) != address(this)) {
             revert NftIsNotApproved();
         }
+
         ListdItems++;
-        _auctionDetail[_nft][_tokenId] = AuctionDetails(
+
+        listedItemDetails[ListdItems] = items(
             payable(msg.sender),
+            address(NFTContract),
+            _tokenId,
             _basePrice,
             address(0),
             0,
             _endTime,
             block.timestamp,
-            false,
+            registerationAccount[msg.sender].role,
+            true,
             true
         );
-        listing[_nft][_tokenId] = items(
-            payable(msg.sender),
-            _basePrice,
-            false,
-            true
-        );
-        emit ItemListed(msg.sender, _nft, _tokenId, _basePrice);
+
+        emit ItemListed(msg.sender, address(NFTContract), _tokenId, _basePrice);
     }
 
-    function bid(address _nft, uint256 _tokenId) public payable nonReentrant {
-        AuctionDetails storage auction = _auctionDetail[_nft][_tokenId];
-        require(auction.ended == false, "Auction has ended");
-        require(auction.seller != address(0), "Auction does not exist");
+    function bid(uint256 _itemId) public payable nonReentrant {
+        items storage Items = listedItemDetails[_itemId];
 
-        _updateStatus(_nft, _tokenId);
+        require(Items.isAuction, "This item not listed on auction");
 
-        if (block.timestamp < auction.endTime) {
-            require(
-                auction.highestBid < msg.value &&
-                    auction.basePrice <= msg.value,
-                "Bid must be higher than the current highest bid and base price"
-            );
-            require(
-                msg.sender != auction.seller,
-                "You cannot bid in your own auction"
-            );
+        require(block.timestamp < Items.endTime, "Item has ended");
 
-            address payable prevBidder = payable(auction.highestBidder);
+        require(Items.seller != address(0), "Item does not exist");
 
-            if (prevBidder != address(0)) {
-                (bool success, ) = prevBidder.call{value: auction.highestBid}(
-                    ""
-                );
-                require(success, "Failed to refund previous bidder");
-            }
-
-            auction.highestBid = msg.value;
-            auction.highestBidder = payable(msg.sender);
-        } else {
-            revert("Auction has already ended");
-        }
-    }
-
-    //This function is use for is Auction End or Not
-    function _checkAuctionStatus(
-        address _nft,
-        uint256 _tokenId
-    ) public view returns (bool) {
-        AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
         require(
-            auction.seller != address(0),
-            "Auction for this NFT is not in progress"
+            Items.highestBid < msg.value && Items.basePrice <= msg.value,
+            "Bid must be higher than the current highest bid and base price"
         );
-        return auction.ended;
-    }
 
+        require(msg.sender != Items.seller, "You cannot bid in your own Items");
 
-    function _updateStatus(address _nft, uint256 _tokenId) internal {
-        AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
-        require(auction.ended == false, "This auction has Ended");
+        address payable prevBidder = payable(Items.highestBidder);
 
-        if (block.timestamp > auction.endTime) {
-            auction.ended = true;
+        if (prevBidder != address(0)) {
+            (bool success, ) = prevBidder.call{value: Items.highestBid}("");
+            require(success, "Failed to refund previous bidder");
         }
-        _auctionDetail[_nft][_tokenId] = auction;
-        _auctionDetail[_nft][_tokenId].auction = false;
+
+        Items.highestBid = msg.value;
+        Items.highestBidder = payable(msg.sender);
     }
 
-    function isAuction(
-        address _nft,
-        uint256 _tokenId
-    ) public view returns (bool) {
-        if (_auctionDetail[_nft][_tokenId].auction == true) {
-            return true;
-        } else {
-            return false;
-        }
+    function _checkItemsStatus(uint256 _itemId) public view returns (bool) {
+        items memory Items = listedItemDetails[_itemId];
+        require(Items.isListedOnSale, "Items for this NFT is not in progress");
+        return (block.timestamp > Items.endTime);
     }
 
-    function getLastTime(
-        address _nft,
-        uint256 _tokenId
-    ) public view returns (uint256) {
-        AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
-        return auction.endTime;
+    function cancellItems(uint256 _itemId) public {
+        items memory Items = listedItemDetails[_itemId];
+
+        require(msg.sender == Items.seller, "You are not Owner of this NFT");
+
+        require(Items.endTime < block.timestamp, "Items Time remaining");
+
+        Items.isListedOnSale = false;
+
+        Items.isAuction = false;
+
+        listedItemDetails[_itemId] = Items;
     }
 
-    function cancellAuction(address _nft, uint256 _tokenId) public {
-        AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
+    function concludeItems(uint256 _itemId) public {
+        items memory Items = listedItemDetails[_itemId];
+
         require(
-            msg.sender == _auctionDetail[_nft][_tokenId].seller,
-            "You are not Owner of this NFT"
+            msg.sender == Items.highestBidder || msg.sender == Items.seller,
+            "You are not authorized to conclude the Items"
         );
-        require(auction.endTime < block.timestamp, "Auction Time remaining");
-        bool ended = _checkAuctionStatus(_nft, _tokenId);
-        if (!ended) {
-            _updateStatus(_nft, _tokenId);
-        }
-        items memory Items = listing[_nft][_tokenId];
-        Items.listed = false;
-        listing[_nft][_tokenId] = Items;
-    }
 
-    function getHighestBid(
-        address _nft,
-        uint256 _tokenId
-    ) public view returns (uint256) {
-        AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
-        return auction.highestBid;
-    }
+        require(Items.endTime < block.timestamp, "Items Time remaining");
 
-    function getHighestBidder(
-        address _nft,
-        uint256 _tokenId
-    ) public view returns (address) {
-        AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
-        return auction.highestBidder;
-    }
+        NFTContract.transferFrom(Items.seller, msg.sender, Items.tokenId);
 
-    //This function is concludeAuction finilise the highest bider
-    function concludeAuction(
-        address _nft,
-        uint256 _tokenId,
-        address _token
-    ) public {
-        AuctionDetails memory auction = _auctionDetail[_nft][_tokenId];
-        require(
-            msg.sender == auction.highestBidder,
-            "You are not authorized to conclude the auction"
+        Items.isAuction = false;
+
+        Items.isListedOnSale = false;
+
+        totalItemsSale++;
+
+        listedItemDetails[_itemId] = Items;
+
+        nftBuyHistory[Items.tokenId].push(
+            BuyHistory(msg.sender, Items.highestBid, block.timestamp)
         );
-        require(auction.endTime < block.timestamp, "Auction Time remaining");
 
-        bool ended = _checkAuctionStatus(_nft, _tokenId);
-        if (!ended) {
-            _updateStatus(_nft, _tokenId);
-        }
-        items memory Item = listing[_nft][_tokenId];
-        IERC721(_nft).transferFrom(Item.seller, msg.sender, _tokenId);
-        Item.sale = true;
-        IERC20(_token).transferFrom(
-            auction.highestBidder,
-            Item.seller,
-            auction.highestBid
+        emit ItemBought(
+            msg.sender,
+            address(NFTContract),
+            Items.tokenId,
+            Items.highestBid
         );
-        totalAuctionSale++;
-        listing[_nft][_tokenId] = Item;
-        emit ItemBought(msg.sender, _nft, _tokenId, auction.highestBid);
     }
 }
