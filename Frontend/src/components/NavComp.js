@@ -10,7 +10,7 @@ const logo = require("../assets/logo-light.png");
 
 function NavComp() {
   const { open } = useAppKit();
-  const { useData } = useContext(Store);
+  const { userData } = useContext(Store);
   const { disconnect } = useDisconnect();
 
   const [hide, sethide] = useState(true);
@@ -40,7 +40,7 @@ function NavComp() {
     navigate(path);
   };
 
-  console.log(useData?.role, "useData?.roleuseData?.roleuseData?.role");
+  console.log(userData?.role, "userData?.roleuseData?.roleuseData?.role");
 
   return (
     <>
@@ -66,7 +66,7 @@ function NavComp() {
                     >
                       Purchase History
                     </button>
-                    {useData?.role === "farmer" && (
+                    {userData?.role === "Farmer" && (
                       <button
                         className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
                         onClick={() => handleNavigation("/list")}

@@ -35,9 +35,9 @@ module.exports = {
     hardhat: {
       chainId: 1337,
       gasPrice: "auto",
-      forking: {
-         url:'https://eth.drpc.org',
-        }
+      // forking: {
+      //    url:'https://eth.drpc.org',
+      //   }
     }, 
     // sepolia: {
     //   url: "https://1rpc.io/sepolia",

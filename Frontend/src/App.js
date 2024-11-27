@@ -44,6 +44,8 @@ function App() {
     const fetchData = async () => {
       try {
         const result = await GetIsUserRegistered();
+        console.log("🚀 ~ fetchData ~ result:", result)
+        
         if (result) {
           setCanCall(true);
         }

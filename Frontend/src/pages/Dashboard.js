@@ -1,43 +1,19 @@
-import React from 'react';
-import NavComp from '../components/NavComp';
-import CardComponent from '../components/CardComponent';
-import PurchaseList from '../components/PurchaseList';
-import ListedProducts from '../components/ListedProduct';
+import React, { useContext, useEffect } from "react";
+import NavComp from "../components/NavComp";
+import CardComponent from "../components/CardComponent";
+import PurchaseList from "../components/PurchaseList";
+import ListedProducts from "../components/ListedProduct";
+import { Store } from "../Store/Store";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 function Dashboard() {
-   const purchases = [
-    {
-      "id": "1",
-      "name": "Apple",
-      "farmerName": "John Doe",
-      "quantityAvailable": 10,
-      "currentPrice": 1.20
-    },
-    {
-      "id": "2",
-      "name": "Banana",
-      "farmerName": "Jane Smith",
-      "quantityAvailable": 5,
-      "currentPrice": 0.50
-    }
-  ];
+  const { loadMarketplaceItems } = useContext(Store);
+  const { address, isConnected } = useAppKitAccount();
 
-  const listings = [
-    {
-      "id": "3",
-      "name": "Orange",
-      "farmerName": "Bob Johnson",
-      "quantityAvailable": 150,
-      "currentPrice": 0.80
-    },
-    {
-      "id": "4",
-      "name": "Grapes",
-      "farmerName": "Alice Brown",
-      "quantityAvailable": 200,
-      "currentPrice": 2.00
-    }
-  ];
+  useEffect(() => {
+    loadMarketplaceItems();
+  }, [address]);
+
   return (
     <>
       <NavComp />
@@ -48,11 +24,13 @@ function Dashboard() {
         <CardComponent />
       </div> */}
 
-         <div className="container mx-auto">
-      <h1 className="text-3xl font-bold text-center my-4">My Product Dashboard</h1>
-      <PurchaseList purchases={purchases} />
-      <ListedProducts listings={listings} />
-    </div>
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-bold text-center my-4">
+          My Product Dashboard
+        </h1>
+        <PurchaseList />
+        {/* <ListedProducts listings={listings} /> */}
+      </div>
     </>
   );
 }

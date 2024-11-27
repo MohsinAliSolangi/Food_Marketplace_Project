@@ -38,7 +38,7 @@ export const StoreProvider = ({ children }) => {
   const [canCall, setCanCall] = useState(false);
 
   const [listedNftData, setListedNftData] = useState([]);
-  const [useData, setUserDaat] = useState({
+  const [userData, setUserDaat] = useState({
     name: "",
     email: "",
     phone_number: "",
@@ -164,8 +164,7 @@ export const StoreProvider = ({ children }) => {
 
       await nftApprove.wait();
 
-      const listOnAuction = await MarketplaceContract.createAuction(
-        FoodTraceabilityContractAddress?.address,
+      const listOnAuction = await MarketplaceContract.createItems(
         tokenId?.toString(),
         amountInWei,
         deadline
@@ -178,6 +177,12 @@ export const StoreProvider = ({ children }) => {
       console.log(error);
     }
   };
+
+  function isAuctionEnded(endTime) {
+    const currentTime = new Date().getTime();
+    const endTimeInMillis = endTime * 1000;
+    return currentTime >= endTimeInMillis;
+  }
 
   const loadMarketplaceItems = async () => {
     if (!isConnected) {
@@ -200,40 +205,56 @@ export const StoreProvider = ({ children }) => {
       );
 
       const itemCount = await MarketplaceContract?.ListdItems();
+      const totalItemsSale = await MarketplaceContract?.totalItemsSale();
 
       let items = [];
       for (let i = 1; i <= itemCount; i++) {
-        const item = await MarketplaceContract?.listedItemDetails(
-          FoodTraceabilityContractAddress.address,
-          i
-        );
+        const item = await MarketplaceContract?.listedItemDetails(i);
+        console.log("🚀 ~ loadMarketplaceItems ~ item:", item);
 
-        if (!item?.isListedOnSale) {
+        // if (item?.isListedOnSale) {
 
-          const temp = Number(time?.toString());
+        const temp = Number(item?.endTime?.toString());
 
-          const uri = await NFTContract?.tokenURI(i);
+        const uri = await NFTContract?.tokenURI(i);
 
-          const response = await fetch(uri);
-          const metadata = await response.json();
-          console.log(metadata, "metadatametadata");
-          console.log(auction, "auctionauctionauction");
-          items.push({
-            time: temp,
-            basePrice: formatEther(item?.price?.toString()),
-            itemId: i,
-            seller: item?.seller,
-            name: metadata?.name?.toString(),
-            description: metadata?.description,
-            image: metadata?.image,
-            weight: metadata?.attributes[2]?.value,
-            variety: metadata?.attributes[0]?.value,
-            origin: metadata?.attributes[1]?.value,
-            highestBid: formatEther(auction?.highestBid?.toString()),
-            highestBidder: auction?.highestBidder,
-            isAuctionEnded: auction?.ended,
-          });
+        const response = await fetch(uri);
+        const metadata = await response.json();
+
+        console.log(metadata, "metadatametadata");
+
+        let purchaseHistory = {};
+
+        if (+totalItemsSale?.toString() > 0) {
+          const buyHistory = await MarketplaceContract?.nftBuyHistory(i);
+          purchaseHistory = buyHistory?.map((buy) => ({
+            buyer: buy?.buyer,
+            price: formatEther(buy?.price?.toString()),
+            timestamp: new Date(
+              buy?.timestamp?.toNumber() * 1000
+            )?.toLocaleString(),
+          }));
         }
+
+        items.push({
+          isListedOnSale: item?.isListedOnSale,
+          time: temp,
+          basePrice: formatEther(item?.basePrice?.toString()),
+          itemId: i,
+          seller: item?.seller,
+          name: metadata?.name?.toString(),
+          description: metadata?.description,
+          image: metadata?.image,
+          weight: metadata?.attributes[2]?.value,
+          variety: metadata?.attributes[0]?.value,
+          origin: metadata?.attributes[1]?.value,
+          highestBid: formatEther(item?.highestBid?.toString()),
+          highestBidder: item?.highestBidder,
+          isAuctionEnded: isAuctionEnded(temp),
+          sallerRole: item?.sallerRole,
+          purchaseHistory: purchaseHistory,
+        });
+        // }
       }
       console.log(items, "itemsitemsitems");
       setListedNftData(items);
@@ -259,7 +280,32 @@ export const StoreProvider = ({ children }) => {
         signer
       );
       setloader(true);
-      await (await MarketplaceContract.cancelListing(itemId)).wait();
+      await (await MarketplaceContract.cancellItems(itemId)).wait();
+      setloader(false);
+    } catch (error) {
+      setloader(false);
+      console.log(error);
+    }
+  };
+
+  const listNftForSale = async (itemId, price) => {
+    if (!isConnected) {
+      return toast.error("Please Connect Your Wallet."), setloader(false);
+    }
+    try {
+      const provider = new ethers.providers.Web3Provider(walletProvider);
+      const signer = provider.getSigner();
+
+      const MarketplaceContract = new ethers.Contract(
+        FoodTraceabilityMarketplaceAddress.address,
+        FoodTraceabilityMarketplace.abi,
+        signer
+      );
+
+      let priceInWei = ethers.utils.parseEther(price?.toString());
+
+      setloader(true);
+      await (await MarketplaceContract.sellItem(itemId, priceInWei)).wait();
       setloader(false);
     } catch (error) {
       setloader(false);
@@ -280,29 +326,7 @@ export const StoreProvider = ({ children }) => {
         signer
       );
       setloader(true);
-      await (await MarketplaceContract.concludeAuction(itemId, address)).wait();
-      setloader(false);
-    } catch (error) {
-      setloader(false);
-      console.log(error);
-    }
-  };
-
-  const cancellAuction = async (itemId) => {
-    if (!isConnected) {
-      return toast.error("Please Connect Your Wallet."), setloader(false);
-    }
-    try {
-      const provider = new ethers.providers.Web3Provider(walletProvider);
-      const signer = provider.getSigner();
-
-      const MarketplaceContract = new ethers.Contract(
-        FoodTraceabilityMarketplaceAddress.address,
-        FoodTraceabilityMarketplace.abi,
-        signer
-      );
-      setloader(true);
-      await (await MarketplaceContract.cancellAuction(itemId, address)).wait();
+      await (await MarketplaceContract.concludeItems(itemId)).wait();
       setloader(false);
     } catch (error) {
       setloader(false);
@@ -352,17 +376,9 @@ export const StoreProvider = ({ children }) => {
 
       setloader(true);
       const bidding = ethers.utils.parseEther(price);
-      console.log(
-        FoodTraceabilityContractAddress.address,
-        itemId,
-        bidding?.toString()
-      );
+      console.log(itemId, bidding?.toString(), "bidddddddddddddddddd");
       await (
-        await MarketplaceContract.bid(
-          FoodTraceabilityContractAddress.address,
-          itemId,
-          { value: bidding?.toString() }
-        )
+        await MarketplaceContract.bid(itemId, { value: bidding?.toString() })
       ).wait();
       setloader(false);
       return true;
@@ -382,15 +398,15 @@ export const StoreProvider = ({ children }) => {
       <Store.Provider
         value={{
           isRegistered,
+          listNftForSale,
           GetIsUserRegistered,
           registerNewUser,
           mintThenList,
           loadMarketplaceItems,
           listedNftData,
           cancelListedNft,
-          useData,
+          userData,
           concludeAuction,
-          cancellAuction,
           buyMarketItem,
           placeBid,
           canCall,

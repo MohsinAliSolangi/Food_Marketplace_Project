@@ -72,6 +72,11 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
     mapping(address => UserAccount) public registerationAccount;
     mapping(uint256 => BuyHistory[]) public nftBuyHistory;
 
+    modifier isRegisters() {
+        require(isUser(msg.sender), "You have to register your self");
+        _;
+    }
+
     IERC721 public NFTContract;
 
     constructor(address _nft) {
@@ -98,7 +103,12 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         return registerationAccount[_address].isRegister;
     }
 
-    function sellItem(uint256 _itemId, uint256 _price) public {
+    function sellItem(
+        uint256 _itemId,
+        uint256 _price,
+        uint256 _endTime,
+        bool _isAuction
+    ) public isRegisters {
         items storage Items = listedItemDetails[_itemId];
 
         if (Items.isListedOnSale == true) {
@@ -109,6 +119,11 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
             revert NftIsNotApproved();
         }
 
+        if (_isAuction) {
+            Items.endTime = _endTime;
+            Items.starTime = block.timestamp;
+            Items.isAuction = _isAuction;
+        }
         Items.seller = payable(msg.sender);
         Items.basePrice = _price;
         Items.isListedOnSale = true;
@@ -127,9 +142,17 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
             revert TransferFailed();
         }
 
-        Items.isListedOnSale = false;
-
         NFTContract.safeTransferFrom(Items.seller, msg.sender, Items.tokenId);
+
+        Items.sallerRole = registerationAccount[msg.sender].role;
+        Items.seller = payable(msg.sender);
+        Items.basePrice = 0;
+        Items.highestBidder = address(0);
+        Items.highestBid = 0;
+        Items.endTime = 0;
+        Items.starTime = 0;
+        Items.isAuction = false;
+        Items.isListedOnSale = false;
 
         nftBuyHistory[Items.tokenId].push(
             BuyHistory(msg.sender, msg.value, block.timestamp)
@@ -152,7 +175,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         uint256 _tokenId,
         uint256 _basePrice,
         uint256 _endTime
-    ) public {
+    ) public isRegisters {
         if (NFTContract.getApproved(_tokenId) != address(this)) {
             revert NftIsNotApproved();
         }
@@ -176,7 +199,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         emit ItemListed(msg.sender, address(NFTContract), _tokenId, _basePrice);
     }
 
-    function bid(uint256 _itemId) public payable nonReentrant {
+    function bid(uint256 _itemId) public payable nonReentrant isRegisters {
         items storage Items = listedItemDetails[_itemId];
 
         require(Items.isAuction, "This item not listed on auction");
@@ -209,7 +232,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         return (block.timestamp > Items.endTime);
     }
 
-    function cancellItems(uint256 _itemId) public {
+    function cancellItems(uint256 _itemId) public isRegisters {
         items memory Items = listedItemDetails[_itemId];
 
         require(msg.sender == Items.seller, "You are not Owner of this NFT");
@@ -223,7 +246,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         listedItemDetails[_itemId] = Items;
     }
 
-    function concludeItems(uint256 _itemId) public {
+    function concludeItems(uint256 _itemId) public isRegisters {
         items memory Items = listedItemDetails[_itemId];
 
         require(
@@ -235,8 +258,14 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
 
         NFTContract.transferFrom(Items.seller, msg.sender, Items.tokenId);
 
+        Items.sallerRole = registerationAccount[Items.highestBidder].role;
+        Items.seller = payable(Items.highestBidder);
+        Items.basePrice = 0;
+        Items.highestBidder = address(0);
+        Items.highestBid = 0;
+        Items.endTime = 0;
+        Items.starTime = 0;
         Items.isAuction = false;
-
         Items.isListedOnSale = false;
 
         totalItemsSale++;
