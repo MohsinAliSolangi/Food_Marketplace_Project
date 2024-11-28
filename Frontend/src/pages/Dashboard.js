@@ -25,9 +25,9 @@ function Dashboard() {
       </div> */}
 
       <div className="container mx-auto">
-        <h1 className="text-3xl font-bold text-center my-4">
-          My Product Dashboard
-        </h1>
+        {/* <h1 className="text-3xl font-bold text-center text-gray-800 my-4"> */}
+        {/* My Product Dashboard */}
+        {/* </h1> */}
         <PurchaseList />
         {/* <ListedProducts listings={listings} /> */}
       </div>

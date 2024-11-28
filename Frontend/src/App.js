@@ -13,20 +13,27 @@ import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import BidPage from "./pages/BidPage";
 import WalletConnect from "./pages/WalletConnect";
-import { useAppKitAccount } from "@reown/appkit/react";
-import { useContext, useEffect } from "react";
+import {
+  useAppKitAccount,
+  useAppKitEvents,
+  useAppKitState,
+  useWalletInfo,
+} from "@reown/appkit/react";
+import { useContext, useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import { Store } from "./Store/Store";
 import Loader from "./Models/Loader";
 
 function App() {
-  const { GetIsUserRegistered, setCanCall, loader, isRegistered } = useContext(Store);
+  const { GetIsUserRegistered, setCanCall, loader, isRegistered } =
+    useContext(Store);
 
   const nevigate = useNavigate();
 
   const { address, isConnected } = useAppKitAccount();
 
   const HandleIsUserRegister = async () => {
-    console.log(isRegistered,"IsRegisteredIsRegistered");
+    console.log(isRegistered, "IsRegisteredIsRegistered");
     if (isConnected) {
       if (!isRegistered) {
         nevigate("/signUp");
@@ -38,14 +45,14 @@ function App() {
     }
   };
 
-//   canCall
-// setCanCall
+  //   canCall
+  // setCanCall
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await GetIsUserRegistered();
-        console.log("🚀 ~ fetchData ~ result:", result)
-        
+        console.log("🚀 ~ fetchData ~ result:", result);
+
         if (result) {
           setCanCall(true);
         }

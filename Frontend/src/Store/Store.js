@@ -12,6 +12,7 @@ import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { useNavigate } from "react-router-dom";
 import { BrowserProvider, Contract, formatUnits } from "ethers";
 import { formatEther } from "ethers/lib/utils";
+import Loader from "../Models/Loader";
 
 export const Store = createContext();
 
@@ -86,6 +87,7 @@ export const StoreProvider = ({ children }) => {
     } catch (error) {
       setloader(false);
       console.log(error);
+      toast.error(`${JSON.stringify(error.reason)}`);
     }
   };
 
@@ -116,10 +118,12 @@ export const StoreProvider = ({ children }) => {
       regis.wait();
       await GetIsUserRegistered();
       setloader(false);
+      toast.success(`Transaction Successfully Success`);
       return true;
     } catch (error) {
       setloader(false);
       console.log(error);
+      toast.error(`${JSON.stringify(error.reason)}`);
     }
   };
 
@@ -129,6 +133,7 @@ export const StoreProvider = ({ children }) => {
     }
     try {
       setloader(true);
+
       const provider = new ethers.providers.Web3Provider(walletProvider);
       const signer = provider.getSigner();
 
@@ -171,6 +176,7 @@ export const StoreProvider = ({ children }) => {
       );
       await listOnAuction.wait();
       setloader(false);
+      toast.success(`Transaction Successfully Success`);
     } catch (error) {
       setloader(false);
       toast.error(`${JSON.stringify(error.reason)}`);
@@ -225,15 +231,20 @@ export const StoreProvider = ({ children }) => {
 
         let purchaseHistory = {};
 
-        if (+totalItemsSale?.toString() > 0) {
-          const buyHistory = await MarketplaceContract?.nftBuyHistory(i);
-          purchaseHistory = buyHistory?.map((buy) => ({
-            buyer: buy?.buyer,
-            price: formatEther(buy?.price?.toString()),
-            timestamp: new Date(
-              buy?.timestamp?.toNumber() * 1000
-            )?.toLocaleString(),
-          }));
+        try {
+          if (+totalItemsSale?.toString() > 0) {
+            const buyHistory = await MarketplaceContract?.getBuyHistory(i);
+            console.log(buyHistory, "buyHistorybuyHistorybuyHistory");
+            purchaseHistory = buyHistory?.map((buy) => ({
+              buyer: buy?.buyer,
+              price: formatEther(buy?.price?.toString()),
+              timestamp: new Date(
+                buy?.timestamp?.toNumber() * 1000
+              )?.toLocaleString(),
+            }));
+          }
+        } catch (error) {
+          console.log(error);
         }
 
         items.push({
@@ -252,7 +263,7 @@ export const StoreProvider = ({ children }) => {
           highestBidder: item?.highestBidder,
           isAuctionEnded: isAuctionEnded(temp),
           sallerRole: item?.sallerRole,
-          purchaseHistory: purchaseHistory,
+          // purchaseHistory: purchaseHistory,
         });
         // }
       }
@@ -282,13 +293,15 @@ export const StoreProvider = ({ children }) => {
       setloader(true);
       await (await MarketplaceContract.cancellItems(itemId)).wait();
       setloader(false);
+      toast.success(`Transaction Successfully Success`);
     } catch (error) {
       setloader(false);
       console.log(error);
+      toast.error(`${JSON.stringify(error.reason)}`);
     }
   };
 
-  const listNftForSale = async (itemId, price) => {
+  const listNftForSale = async (itemId, price, deadline, isAcution) => {
     if (!isConnected) {
       return toast.error("Please Connect Your Wallet."), setloader(false);
     }
@@ -302,14 +315,42 @@ export const StoreProvider = ({ children }) => {
         signer
       );
 
+      const NFTContract = new ethers.Contract(
+        FoodTraceabilityContractAddress.address,
+        FoodTraceabilityContract.abi,
+        signer
+      );
+
+      let nftApprove = await NFTContract.approve(
+        FoodTraceabilityMarketplaceAddress.address,
+        itemId?.toString()
+      );
+
+      await nftApprove.wait();
+
       let priceInWei = ethers.utils.parseEther(price?.toString());
 
       setloader(true);
-      await (await MarketplaceContract.sellItem(itemId, priceInWei)).wait();
+      if (isAcution) {
+        await (
+          await MarketplaceContract.sellItem(
+            itemId,
+            priceInWei,
+            deadline,
+            isAcution
+          )
+        ).wait();
+      } else {
+        await (
+          await MarketplaceContract.sellItem(itemId, priceInWei, "0", false)
+        ).wait();
+      }
       setloader(false);
+      toast.success(`Transaction Successfully Success`);
     } catch (error) {
       setloader(false);
       console.log(error);
+      toast.error(`${JSON.stringify(error.reason)}`);
     }
   };
 
@@ -328,9 +369,11 @@ export const StoreProvider = ({ children }) => {
       setloader(true);
       await (await MarketplaceContract.concludeItems(itemId)).wait();
       setloader(false);
+      toast.success(`Transaction Successfully Success`);
     } catch (error) {
       setloader(false);
       console.log(error);
+      toast.error(`${JSON.stringify(error.reason)}`);
     }
   };
 
@@ -354,9 +397,11 @@ export const StoreProvider = ({ children }) => {
         })
       ).wait();
       setloader(false);
+      toast.success(`Transaction Successfully Success`);
     } catch (error) {
       console.log(error);
       setloader(false);
+      toast.error(`${JSON.stringify(error.reason)}`);
     }
   };
 
@@ -381,10 +426,12 @@ export const StoreProvider = ({ children }) => {
         await MarketplaceContract.bid(itemId, { value: bidding?.toString() })
       ).wait();
       setloader(false);
+      toast.success(`Transaction Successfully Success`);
       return true;
     } catch (error) {
       setloader(false);
       console.log(error);
+      toast.error(`${JSON.stringify(error.reason)}`);
       return false;
     }
   };
@@ -392,6 +439,11 @@ export const StoreProvider = ({ children }) => {
   //////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////// GET FUNCTIONS /////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    GetIsUserRegistered();
+  }, [address]);
+
+  console.log(isRegistered, "isRegistered");
 
   return (
     <>
@@ -414,7 +466,7 @@ export const StoreProvider = ({ children }) => {
           loader,
         }}
       >
-        {children}
+        {isRegistered ? children : <Loader />}
       </Store.Provider>
     </>
   );

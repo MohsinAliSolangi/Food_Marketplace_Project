@@ -145,6 +145,7 @@
     background-color: #0056b3; /* Darker shade for hover */
   }
   
+  
   /* Responsive Styles */
   @media (max-width: 600px) {
     .header {
@@ -157,4 +158,6 @@
       gap: 10px;
     }
   }
+  
+
   

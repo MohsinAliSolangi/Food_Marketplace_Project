@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { Web3Modal } from "./Store/Web3Modal";
 import { StoreProvider } from "./Store/Store";
 import { BrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
@@ -13,6 +14,7 @@ root.render(
         <StoreProvider>
           <BrowserRouter>
             <App />
+            <ToastContainer/>
           </BrowserRouter>
         </StoreProvider>
     </Web3Modal>

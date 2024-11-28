@@ -37,9 +37,9 @@ function ProductComponent() {
     console.log(item, "sellerRolesellerRole");
     const allowedRoleCombinations = {
       Farmer: ["Dealer", "Farmer"],
-      Dealer: ["Farmer", "Wholesaler"],
-      Wholesaler: ["Dealer", "Farmer"],
-      Seller: ["Buyer"],
+      Dealer: ["Dealer", "Wholesaler"],
+      Wholesaler: ["Wholesaler", "Seller"],
+      Seller: ["Seller", "Buyer"],
       Buyer: ["Seller"],
     };
     return allowedRoleCombinations[sellerRole]?.includes(userRole);
@@ -81,6 +81,13 @@ function ProductComponent() {
                     <strong>Weight:</strong> {item?.weight} kg
                   </p>
                   <p className="text-sm text-gray-600">
+                    <strong>Height Bidder:</strong>{" "}
+                    {`${item?.highestBidder?.slice(
+                      0,
+                      6
+                    )}...${item?.highestBidder?.slice(-6)}`}
+                  </p>
+                  <p className="text-sm text-gray-600">
                     <strong>Base Price:</strong> ETH
                     {item?.highestBid > 0
                       ? item?.highestBid?.toString()
@@ -89,14 +96,22 @@ function ProductComponent() {
                 </div>
                 <div className="flex justify-between mt-2">
                   <p className="text-sm text-gray-600">
+                    <strong>Seller Role:</strong> {item?.sallerRole}
+                  </p>
+                  <p className="text-sm text-gray-600">
                     <strong>Bidding Deadline:</strong>{" "}
                     <Countdown date={item?.time * 1000} renderer={renderer} />
                   </p>
+
                   <button
                     onClick={() => nevigate(`bid/${item?.itemId}`)}
                     className="px-3 py-2 text-xs font-bold text-white uppercase bg-gray-800 rounded"
                   >
-                   {`${address?.toLowerCase() === item?.seller?.toLowerCase() ? "Your NFT" :"Bid"}`}
+                    {`${
+                      address?.toLowerCase() === item?.seller?.toLowerCase()
+                        ? "Your NFT"
+                        : "Bid"
+                    }`}
                   </button>
 
                   {item?.highestBid > 0 &&

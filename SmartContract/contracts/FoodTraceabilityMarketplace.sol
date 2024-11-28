@@ -283,4 +283,8 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
             Items.highestBid
         );
     }
+
+    function getBuyHistory(uint256 nftId) public view returns (BuyHistory[] memory) {
+        return nftBuyHistory[nftId];
+    }
 }
