@@ -9,14 +9,6 @@ error NFT_alreadyListed();
 error TransferFailed();
 
 contract FoodTraceabilityMarketplace is ReentrancyGuard {
-    enum Role {
-        Farmer,
-        Dealer,
-        Wholesaler,
-        Seller,
-        Buyer
-    }
-
     struct UserAccount {
         string name;
         string email;
@@ -26,6 +18,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
     }
 
     struct items {
+        address farmer;
         address payable seller;
         address nftContract;
         uint256 tokenId;
@@ -34,6 +27,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         uint256 highestBid;
         uint256 endTime;
         uint256 starTime;
+        uint256 mintTime;
         string sallerRole;
         bool isAuction;
         bool isListedOnSale;
@@ -183,6 +177,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         ListdItems++;
 
         listedItemDetails[ListdItems] = items(
+            msg.sender,
             payable(msg.sender),
             address(NFTContract),
             _tokenId,
@@ -190,6 +185,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
             address(0),
             0,
             _endTime,
+            block.timestamp,
             block.timestamp,
             registerationAccount[msg.sender].role,
             true,
@@ -258,6 +254,15 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
 
         NFTContract.transferFrom(Items.seller, msg.sender, Items.tokenId);
 
+        address payable prevSeller = payable(Items.seller);
+
+        if (prevSeller != address(0)) {
+            (bool success, ) = prevSeller.call{value: Items.highestBid}("");
+            require(success, "Failed to refund previous bidder");
+        }
+
+        uint256 bidSale = Items.highestBid;
+
         Items.sallerRole = registerationAccount[Items.highestBidder].role;
         Items.seller = payable(Items.highestBidder);
         Items.basePrice = 0;
@@ -273,7 +278,7 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         listedItemDetails[_itemId] = Items;
 
         nftBuyHistory[Items.tokenId].push(
-            BuyHistory(msg.sender, Items.highestBid, block.timestamp)
+            BuyHistory(msg.sender, bidSale, block.timestamp)
         );
 
         emit ItemBought(
@@ -284,7 +289,9 @@ contract FoodTraceabilityMarketplace is ReentrancyGuard {
         );
     }
 
-    function getBuyHistory(uint256 nftId) public view returns (BuyHistory[] memory) {
+    function getBuyHistory(
+        uint256 nftId
+    ) public view returns (BuyHistory[] memory) {
         return nftBuyHistory[nftId];
     }
 }

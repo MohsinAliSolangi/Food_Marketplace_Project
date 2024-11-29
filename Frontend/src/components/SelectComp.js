@@ -15,7 +15,6 @@ function SelectComp({ formData, handleChange }) {
         <option value="Dealer">Dealer</option>
         <option value="Wholesaler">Wholesaler</option>
         <option value="Seller">Seller</option>
-        <option value="Buyer">Buyer</option>
       </select>
     </label>
   );

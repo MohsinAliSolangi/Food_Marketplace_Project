@@ -61,7 +61,7 @@ function PurchaseList() {
                 <div className="flex justify-between mt-2">
                   <p className="text-sm text-gray-600">
                     <strong>Farmer:</strong>{" "}
-                    {`${item?.seller?.slice(0, 6)}...${item?.seller?.slice(
+                    {`${item?.farmer?.slice(0, 6)}...${item?.farmer?.slice(
                       -6
                     )}`}
                   </p>

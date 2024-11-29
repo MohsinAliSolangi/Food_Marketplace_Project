@@ -4,8 +4,8 @@ import { Store } from "../Store/Store";
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { useNavigate } from "react-router-dom";
 
-function Signup({HandleIsUserRegister}) {
-  const { registerNewUser,canCall } = useContext(Store);
+function Signup() {
+  const { registerNewUser, canCall, HandleIsUserRegister } = useContext(Store);
   const { address, isConnected } = useAppKitAccount();
 
   const [formData, setFormData] = useState({

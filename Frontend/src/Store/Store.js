@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import { BrowserProvider, Contract, formatUnits } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import Loader from "../Models/Loader";
+import WalletConnect from "../pages/WalletConnect";
+import Signup from "../pages/Signup";
 
 export const Store = createContext();
 
@@ -39,6 +41,7 @@ export const StoreProvider = ({ children }) => {
   const [canCall, setCanCall] = useState(false);
 
   const [listedNftData, setListedNftData] = useState([]);
+
   const [userData, setUserDaat] = useState({
     name: "",
     email: "",
@@ -46,15 +49,29 @@ export const StoreProvider = ({ children }) => {
     role: "",
   });
 
+  let nevigate = useNavigate();
+
   // ////////////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////
+
+  const HandleIsUserRegister = async () => {
+    console.log(isRegistered, "IsRegisteredIsRegistered");
+    if (isConnected) {
+      if (!isRegistered) {
+        nevigate("/signUp");
+      } else {
+        nevigate("/marketplace");
+      }
+    } else {
+      nevigate("/");
+    }
+  };
 
   const GetIsUserRegistered = async () => {
     try {
       if (isConnected) {
-        setloader(true);
-
+        //setloader(true);
         const ethersProvider = new ethers.providers.Web3Provider(
           walletProvider
         );
@@ -81,13 +98,13 @@ export const StoreProvider = ({ children }) => {
           role: IsRegistered?.role,
         }));
         console.log(IsRegistered, "IsRegistered`1");
-        setloader(false);
+        // setloader(false);
         return true;
       }
     } catch (error) {
       setloader(false);
       console.log(error);
-      toast.error(`${JSON.stringify(error.reason)}`);
+      // toast.error(`${JSON.stringify(error.reason)}`);
     }
   };
 
@@ -117,6 +134,7 @@ export const StoreProvider = ({ children }) => {
       );
       regis.wait();
       await GetIsUserRegistered();
+      await HandleIsUserRegister();
       setloader(false);
       toast.success(`Transaction Successfully Success`);
       return true;
@@ -253,6 +271,7 @@ export const StoreProvider = ({ children }) => {
           basePrice: formatEther(item?.basePrice?.toString()),
           itemId: i,
           seller: item?.seller,
+          farmer: item?.farmer,
           name: metadata?.name?.toString(),
           description: metadata?.description,
           image: metadata?.image,
@@ -263,7 +282,8 @@ export const StoreProvider = ({ children }) => {
           highestBidder: item?.highestBidder,
           isAuctionEnded: isAuctionEnded(temp),
           sallerRole: item?.sallerRole,
-          // purchaseHistory: purchaseHistory,
+          productCropTime: item?.mintTime?.toString(),
+          purchaseHistory: purchaseHistory,
         });
         // }
       }
@@ -450,6 +470,7 @@ export const StoreProvider = ({ children }) => {
       <Store.Provider
         value={{
           isRegistered,
+          HandleIsUserRegister,
           listNftForSale,
           GetIsUserRegistered,
           registerNewUser,
@@ -466,7 +487,7 @@ export const StoreProvider = ({ children }) => {
           loader,
         }}
       >
-        {isRegistered ? children : <Loader />}
+        {isConnected ? isRegistered ? children : <Signup /> : <WalletConnect />}
       </Store.Provider>
     </>
   );

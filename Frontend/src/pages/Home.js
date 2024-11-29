@@ -9,15 +9,15 @@ import {
 } from "@reown/appkit/react";
 import { Store } from "../Store/Store";
 
-function Home({HandleIsUserRegister}) {
+function Home() {
   const { walletInfo } = useWalletInfo();
 
-  const { loadMarketplaceItems,canCall, isRegistered } = useContext(Store);
+  const { loadMarketplaceItems, canCall, isRegistered, HandleIsUserRegister } =
+    useContext(Store);
 
   const { address, isConnected, chain } = useAppKitAccount();
 
   let nevigate = useNavigate();
-
 
   useEffect(() => {
     if (canCall) {
@@ -25,9 +25,9 @@ function Home({HandleIsUserRegister}) {
     }
   }, [address, canCall]);
 
-  useEffect(()=>{
-    loadMarketplaceItems()
-  },[address])
+  useEffect(() => {
+    loadMarketplaceItems();
+  }, [address]);
   return (
     <>
       <NavComp />

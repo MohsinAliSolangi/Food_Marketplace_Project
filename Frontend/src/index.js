@@ -10,14 +10,14 @@ import { ToastContainer } from "react-toastify";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
-    <Web3Modal>
+    <BrowserRouter>
+      <Web3Modal>
         <StoreProvider>
-          <BrowserRouter>
-            <App />
-            <ToastContainer/>
-          </BrowserRouter>
+          <App />
+          <ToastContainer />
         </StoreProvider>
-    </Web3Modal>
+      </Web3Modal>
+    </BrowserRouter>
   </>
 );
 

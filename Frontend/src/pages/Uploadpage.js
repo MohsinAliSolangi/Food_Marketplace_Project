@@ -6,11 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { Store } from "../Store/Store";
 import { useAppKitAccount } from "@reown/appkit/react";
 
-function Uploadpage({HandleIsUserRegister}) {
-
-  const { mintThenList,canCall } = useContext(Store);
+function Uploadpage() {
+  const { mintThenList, canCall, HandleIsUserRegister } = useContext(Store);
   const { address, isConnected } = useAppKitAccount();
-  
+
   const navigate = useNavigate();
 
   //TODO::uncommit this for production

@@ -9,11 +9,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Store } from "../Store/Store";
 
-const WalletConnect = ({ HandleIsUserRegister }) => {
-  const { canCall } = useContext(Store);
-  // 4. Use modal hook
-  const { open } = useAppKit();
+const WalletConnect = () => {
+  const { canCall, HandleIsUserRegister } = useContext(Store);
   const { address, isConnected } = useAppKitAccount();
+  const { open } = useAppKit();
 
   useEffect(() => {
     if (canCall) {

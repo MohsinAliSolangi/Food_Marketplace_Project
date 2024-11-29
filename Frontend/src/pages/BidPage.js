@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { Store } from "../Store/Store";
 
-function BidPage({ HandleIsUserRegister }) {
+function BidPage() {
   const { id } = useParams();
-  const { canCall } = useContext(Store);
+  const { canCall, HandleIsUserRegister } = useContext(Store);
   const { address } = useAppKitAccount();
 
   // useEffect(() => {

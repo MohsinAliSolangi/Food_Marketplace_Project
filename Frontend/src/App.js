@@ -32,18 +32,18 @@ function App() {
 
   const { address, isConnected } = useAppKitAccount();
 
-  const HandleIsUserRegister = async () => {
-    console.log(isRegistered, "IsRegisteredIsRegistered");
-    if (isConnected) {
-      if (!isRegistered) {
-        nevigate("/signUp");
-      } else {
-        nevigate("/marketplace");
-      }
-    } else {
-      nevigate("/");
-    }
-  };
+  // const HandleIsUserRegister = async () => {
+  //   console.log(isRegistered, "IsRegisteredIsRegistered");
+  //   if (isConnected) {
+  //     if (!isRegistered) {
+  //       nevigate("/signUp");
+  //     } else {
+  //       nevigate("/marketplace");
+  //     }
+  //   } else {
+  //     nevigate("/");
+  //   }
+  // };
 
   //   canCall
   // setCanCall
@@ -69,24 +69,13 @@ function App() {
       {loader && <Loader />}
       <Routes>
         {/* wallet connect */}
-        <Route
-          path="/"
-          element={
-            <WalletConnect HandleIsUserRegister={HandleIsUserRegister} />
-          }
-        />
+        <Route path="/" element={<WalletConnect />} />
 
         {/* upload */}
-        <Route
-          path="/list"
-          element={<Uploadpage HandleIsUserRegister={HandleIsUserRegister} />}
-        />
+        <Route path="/list" element={<Uploadpage />} />
 
         <Route path="/profile" element={<Profile />} />
-        <Route
-          path="/signup"
-          element={<Signup HandleIsUserRegister={HandleIsUserRegister} />}
-        />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 
         {/* selling */}
@@ -94,14 +83,8 @@ function App() {
 
         {/* marketplace
          */}
-        <Route
-          path="/marketplace"
-          element={<Home HandleIsUserRegister={HandleIsUserRegister} />}
-        />
-        <Route
-          path="marketplace/bid/:id"
-          element={<BidPage HandleIsUserRegister={HandleIsUserRegister} />}
-        />
+        <Route path="/marketplace" element={<Home />} />
+        <Route path="marketplace/bid/:id" element={<BidPage />} />
 
         {/* about us 
       <Route path='/about' element={<about/>}/>

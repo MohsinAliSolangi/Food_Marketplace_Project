@@ -119,7 +119,7 @@ function NavComp() {
                           aria-labelledby="options-menu"
                         >
                           <button
-                            onClick={() => handleNavigation("/profile")}
+                            onClick={() => open()}
                             className="block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                           >
                             Profile
