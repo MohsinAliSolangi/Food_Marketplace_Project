@@ -8,8 +8,8 @@ function UploadForm({ onSubmit }) {
     currentPrice: '',
     biddingDeadline: '',
     description: '',
-    weight: '', // New field for weight
-    image: null, // New field for image
+    weight: '',
+    image: null,
   });
 
   const handleChange = (e) => {
@@ -23,14 +23,13 @@ function UploadForm({ onSubmit }) {
   const handleFileChange = (e) => {
     setProduct((prevProduct) => ({
       ...prevProduct,
-      image: e.target.files[0], // Store the selected file
+      image: e.target.files[0],
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(product);
-    // Reset form after submission
     setProduct({
       name: '',
       variety: '',
@@ -44,11 +43,10 @@ function UploadForm({ onSubmit }) {
   };
 
   return (
-    <div className="container max-w-3xl px-4 mx-auto sm:px-8 py-8">
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">List Your Product</h2>
-      <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6">
+    <div className=" max-w-3xl px-4 mx-auto sm:px-8 py-8">
+      <form onSubmit={handleSubmit} className="bg-white shadow-2xl border-2 rounded-lg p-6">
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="name">
             Product Name
           </label>
           <input
@@ -57,11 +55,11 @@ function UploadForm({ onSubmit }) {
             value={product.name}
             onChange={handleChange}
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="variety">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="variety">
             Variety
           </label>
           <input
@@ -70,11 +68,11 @@ function UploadForm({ onSubmit }) {
             value={product.variety}
             onChange={handleChange}
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="origin">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="origin">
             Origin
           </label>
           <input
@@ -83,11 +81,11 @@ function UploadForm({ onSubmit }) {
             value={product.origin}
             onChange={handleChange}
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="currentPrice">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="currentPrice">
             Current Price ($)
           </label>
           <input
@@ -97,11 +95,11 @@ function UploadForm({ onSubmit }) {
             onChange={handleChange}
             required
             step="0.01"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray -700 text-sm font-bold mb-2" htmlFor="biddingDeadline">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="biddingDeadline">
             Bidding Deadline
           </label>
           <input
@@ -110,11 +108,11 @@ function UploadForm({ onSubmit }) {
             value={product.biddingDeadline}
             onChange={handleChange}
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus :outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="weight">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="weight">
             Weight (kg)
           </label>
           <input
@@ -124,11 +122,12 @@ function UploadForm({ onSubmit }) {
             onChange={handleChange}
             required
             step="0.01"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
+        
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="image">
             Image
           </label>
           <input
@@ -136,11 +135,11 @@ function UploadForm({ onSubmit }) {
             name="image"
             onChange={handleFileChange}
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+          <label className="block text-gray-800 text-md font-medium mb-1" htmlFor="description">
             Description
           </label>
           <textarea
@@ -148,12 +147,12 @@ function UploadForm({ onSubmit }) {
             value={product.description}
             onChange={handleChange}
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
           />
         </div>
         <button
           type="submit"
-          className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out w-full"
         >
           List Product
         </button>
