@@ -86,14 +86,8 @@ function App() {
         <Route path="/marketplace" element={<Home />} />
         <Route path="marketplace/bid/:id" element={<BidPage />} />
 
-        {/* about us 
-      <Route path='/about' element={<about/>}/>
-      */}
-
-        {/* contact us 
-      <Route path='/contact' element={<contact/>}/>
-      */}
       </Routes>
+     
     </>
   );
 }

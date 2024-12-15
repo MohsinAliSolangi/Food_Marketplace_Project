@@ -26,7 +26,7 @@ function NavComp() {
 
   const { address, isConnected } = useAppKitAccount();
 
-  let nevigate = useNavigate();
+
 
   // useEffect(() => {
   //   if (!isConnected) {
@@ -110,7 +110,7 @@ function NavComp() {
                       </div>
                       <div
                         style={hide ? s.hid : s.nohid}
-                        className="absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
+                        className="absolute z-10 right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
                       >
                         <div
                           className="py-1"
@@ -120,14 +120,14 @@ function NavComp() {
                         >
                           <button
                             onClick={() => open()}
-                            className="block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                            className="block w-full px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                           >
                             Profile
                           </button>
 
                           <button
                             onClick={() => disconnect()}
-                            className="block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                            className="block w-full px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                           >
                             Logout
                           </button>

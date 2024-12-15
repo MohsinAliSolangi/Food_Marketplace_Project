@@ -81,9 +81,8 @@ function Uploadpage() {
   return (
     <>
       <NavComp />
-      <div>
         <UploadForm onSubmit={handleSubmit} />
-      </div>
+      
     </>
   );
 }
