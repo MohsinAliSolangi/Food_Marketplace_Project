@@ -5,23 +5,26 @@ import { uploadFileToIPFS, uploadJSONToIPFS } from "../pinata";
 import { useNavigate } from "react-router-dom";
 import { Store } from "../Store/Store";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { toast } from "react-toastify";
 
 function Uploadpage() {
-  const { mintThenList, canCall, HandleIsUserRegister } = useContext(Store);
+  const { mintThenList, canCall, HandleIsUserRegister, loader, setloader } =
+    useContext(Store);
   const { address, isConnected } = useAppKitAccount();
 
   const navigate = useNavigate();
 
   //TODO::uncommit this for production
   const handleSubmit = async (product) => {
+    setloader(true);
     console.log(product, "productproductproduct");
 
     if (typeof product?.image !== "undefined") {
-      let resut
+      let resut;
       try {
         resut = await uploadFileToIPFS(product?.image);
       } catch (error) {
-        console.log("ipfs image fails",error);
+        console.log("ipfs image fails", error);
       }
 
       const nftJSON = {
@@ -38,15 +41,20 @@ function Uploadpage() {
       try {
         const result = await uploadJSONToIPFS(nftJSON);
         console.log("this is json image format ", result);
+        toast.success("uploadsuccess")
+        if (!product?.currentPrice || !product?.biddingDeadline || !result)
+          return;
 
-        if (!product?.currentPrice || !product?.biddingDeadline || !result) return;
-        
         const timestamp = convertToUnixTimestamp(product?.biddingDeadline);
 
-        await mintThenList(product?.currentPrice,timestamp,result);
+        await mintThenList(product?.currentPrice, timestamp, result?.pinataURL);
+        
         navigate("/marketplace");
+        setloader(false);
       } catch (error) {
+        setloader(false);
         console.log("ipfs uri upload error: ", error);
+        toast.error("upload failed")
       }
     }
   };
@@ -81,8 +89,7 @@ function Uploadpage() {
   return (
     <>
       <NavComp />
-        <UploadForm onSubmit={handleSubmit} />
-      
+      <UploadForm onSubmit={handleSubmit} />
     </>
   );
 }

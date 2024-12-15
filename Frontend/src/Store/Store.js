@@ -241,7 +241,7 @@ export const StoreProvider = ({ children }) => {
         const temp = Number(item?.endTime?.toString());
 
         const uri = await NFTContract?.tokenURI(i);
-
+        console.log(uri, "uriuriuri");
         const response = await fetch(uri);
         const metadata = await response.json();
 
@@ -485,6 +485,7 @@ export const StoreProvider = ({ children }) => {
           canCall,
           setCanCall,
           loader,
+          setloader,
         }}
       >
         {isConnected ? isRegistered ? children : <Signup /> : <WalletConnect />}

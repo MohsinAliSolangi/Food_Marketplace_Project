@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 const FormData = require('form-data');
 const key =process.env.REACT_APP_pinata_api_key; 
 const secret =process.env.REACT_APP_pinata_secret_api_key;
@@ -23,6 +24,7 @@ export const uploadJSONToIPFS = async(JSONBody) => {
         })
         .catch(function (error) {
             console.log(error)
+            toast.error("upload failed")
             return {
                 success: false,
                 message: error.message,
@@ -57,6 +59,7 @@ export const uploadFileToIPFS = async(file) => {
         })
         .catch(function (error) {
             console.log("error",error.message)
+            toast.error("upload failed")
             return {
                 success: false,
                 message: error.message,
