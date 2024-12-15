@@ -3,6 +3,7 @@ import { Store } from "../Store/Store";
 import Countdown from "react-countdown";
 import { useNavigate } from "react-router-dom";
 import { useAppKitAccount } from "@reown/appkit/react";
+import Qr from "../assets/qr.jpeg";
 
 function ProductComponent() {
   const navigate = useNavigate();
@@ -75,6 +76,9 @@ function ProductComponent() {
                 alt={item?.name}
                 className="w-full h-48 object-cover rounded-t-lg"
               />
+               <div className="m-4 absolute right-0">
+                  <img src={Qr} alt="QR Code" className="w-16 h-16" />
+                </div>
               <div className="p-4">
                 <h1 className="text-xl font-semibold text-gray-900">{item?.name}</h1>
                 <div className="flex flex-col mt-2 space-y-1">
@@ -91,7 +95,7 @@ function ProductComponent() {
                     <strong>Weight:</strong> {item?.weight} kg
                   </p>
                   <p className="text-sm text-gray-600">
-                    <strong>Height Bidder:</strong> {`${item?.highestBidder?.slice(0, 6)}...${item?.highestBidder?.slice(-6)}`}
+                    <strong>Highest Bidder:</strong> {`${item?.highestBidder?.slice(0, 6)}...${item?.highestBidder?.slice(-6)}`}
                   </p>
                   <p className="text-sm text-gray-600">
                     <strong>Base Price:</strong> ETH {item?.highestBid > 0 ? item?.highestBid?.toString() : item?.basePrice?.toString()}
@@ -106,6 +110,7 @@ function ProductComponent() {
                     <strong>Bidding Deadline:</strong> <Countdown date={item?.time * 1000} renderer={renderer} />
                   </p>
                 </div>
+                
                 <div className="flex justify-between mt-4">
                   <button
                     onClick={() => navigate(`bid/${item?.itemId}`)}
